@@ -1,0 +1,57 @@
+---
+title: "Przygotowanie danych"
+author: "Czarnoksiężnicy z Oz"
+date: Opublikowane `r format(Sys.time(), "%A %d %B %Y")`
+---
+## Dane
+```{r}
+dane <- read.csv("Hipoteczny.csv", header = TRUE)
+```
+
+## 1. Identyfikacja brakujących danych
+### Autor:
+
+### Sprawdzenie, które kolumny zawierając brakujące wartości
+```{r}
+
+```
+
+### Wyliczenie procentu brakujących danych w każdej kolumnie
+```{r}
+
+```
+
+### Wykonanie wizualizacji braków danych
+```{r}
+
+```
+
+## 2. Analiza przyczyn braków
+### Autor:
+
+### Analiza przecięć brakujących wartości
+```{r}
+
+```
+
+### Analiza relacji brakujących wartości
+```{r}
+
+```
+
+### Ocena wzorców braków danych dla poszczególnych kolumn
+
+## 3. Uzupełnianie braków danych
+### Autor: 
+
+### Decyzja o strategii postępowania z brakującymi danymi
+
+### Przeprowadzenie powyższej strategii
+```{r}
+
+```
+
+### Weryfikacja poprawności
+```{r}
+
+```
