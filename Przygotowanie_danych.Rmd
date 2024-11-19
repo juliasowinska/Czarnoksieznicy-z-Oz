@@ -6,25 +6,46 @@ date: Opublikowane `r format(Sys.time(), "%A %d %B %Y")`
 ## Dane
 ```{r}
 dane <- read.csv("Hipoteczny.csv", header = TRUE)
+dane[dane == ""] <- NA
+View(dane)
+
 ```
 
 ## 1. Identyfikacja brakujących danych
-### Autor:
+### Autor: Dominika Szymczak
 
-### Sprawdzenie, które kolumny zawierając brakujące wartości
+#### Instalowanie potrzebnych pakietów
 ```{r}
+install.packages("naniar")
 
 ```
+
+### Sprawdzenie, które kolumny zawierają brakujące wartości
+```{r}
+library(naniar)
+n_miss(dane) # Returns NA count in your data frame or column
+n_complete(dane) # Returns number of complete values
+pct_miss(dane) # Proportion or percentage of values that are NA
+miss_var_summary(dane) # A summary table of NA counts in your table
+
+```
+
+#### W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich rekordów. Występują one w kolumnach Credit_History (50), Self_Employed (32), LoanAmount (22), Dependents(15), Loan_Amount_Term (14), Gender(13) i Married(3). 
 
 ### Wyliczenie procentu brakujących danych w każdej kolumnie
 ```{r}
+miss_case_table(dane) # A summary table of NAs by case (observation)
 
 ```
+
+#### 480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych rekordów). Stanowi to 78,18% wszystkich obserwacji.
 
 ### Wykonanie wizualizacji braków danych
 ```{r}
-
+vis_miss(dane, cluster = TRUE, sort_miss = TRUE) # Visualize locations of NA as a ggplot object
+gg_miss_fct(dane, fct=Self_Employed) # Create a heatmap of NA counts by group
 ```
+Braki w Self_Employed mogą być efektem niepodania informacji przez aplikantów lub nieposiadania formalnego zatrudnienia.
 
 ## 2. Analiza przyczyn braków
 ### Autor:
