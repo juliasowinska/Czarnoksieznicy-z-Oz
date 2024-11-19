@@ -30,7 +30,7 @@ miss_var_summary(dane) # A summary table of NA counts in your table
 
 ```
 
-#### W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich rekordów. Występują one w kolumnach Credit_History (50), Self_Employed (32), LoanAmount (22), Dependents(15), Loan_Amount_Term (14), Gender(13) i Married(3). 
+W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich rekordów. Występują one w kolumnach Credit_History (50), Self_Employed (32), LoanAmount (22), Dependents(15), Loan_Amount_Term (14), Gender(13) i Married(3). 
 
 ### Wyliczenie procentu brakujących danych w każdej kolumnie
 ```{r}
@@ -38,7 +38,7 @@ miss_case_table(dane) # A summary table of NAs by case (observation)
 
 ```
 
-#### 480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych rekordów). Stanowi to 78,18% wszystkich obserwacji.
+480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych rekordów). Stanowi to 78,18% wszystkich obserwacji.
 
 ### Wykonanie wizualizacji braków danych
 ```{r}
@@ -47,20 +47,58 @@ gg_miss_fct(dane, fct=Self_Employed) # Create a heatmap of NA counts by group
 ```
 Braki w Self_Employed mogą być efektem niepodania informacji przez aplikantów lub nieposiadania formalnego zatrudnienia.
 
+W LoanAmount mogże brakować danych z powodu problemów z wyceną wnioskowanej kwoty w momencie wypełniania wniosku internetowego.
+
+Kolumna Credit_History ma największy odsetek braków w kategorii NA w Self_Employed. To znaczy, że brak danych w Self_Employed jest często powiązany z brakiem historii kredytowej.
+
 ## 2. Analiza przyczyn braków
-### Autor:
+### Autor: Julia Sowińska
 
 ### Analiza przecięć brakujących wartości
 ```{r}
+dane <- as.data.frame(dane)
 
+gg_miss_upset(dane, nsets = 7)
 ```
+Wykres potwierdza poprzednie wyniki o dominacji pojedynczych zbiorach braków. 
+
+Najwięcej braków danych jest w kolumnie Credit_History i są to braki pojedyncze, to znaczy, że z pośród wszystkich kolumn w 43 wierszach tylko kolumna Credit_History ma NA.
+
+```{r}
+table(dane$Credit_History)
+table(dane$Self_Employed)
+```
+Patrząc na rozkład wartości w kolumnie Credit_History oraz na liczbę brakujących wartości, nasuwa się założenie, że wartości brakujące mogą reprezentować kredytobiorców, którzy nie chcieli przyznawać się do braku historii kredytowej lub dla których bank napotkał problemy z pozyskaiem danych.
+
+Podobnie w przypadku braków w kolumnie Self_Employment - mogą one reprezentować kredytobiorców, którzy nie chcieli przyznawać się do samozatrudnienia lub uznali, że nie muszą oni wypełniać tej kolumny.
+
+Braki w kolumnie LoanAmount mogą reprezentować klientów, który złożyli wniosek kredytowy bez konkretnej kwoty, zakładając, że kwota zostanie ustalona podczas analizy. Co ciekawe spośród wierszy charakteryzujących się wartością NA w kolumnie LoanAmount równo połowa ma LoanStatus równy Y i połowa równu N.
+
+Braki w kolumnie Loan_Amount_Term sytuacja może wyglądać podobnie - mogą to być klienci, którzy nie wypełnili wartości w kolumnie, zakładając domyślne ustawienia banku. 
+
+Braki w kolumnie Gender mogą reprezentować osoby, które nie chciały podawać tej informacji, uznając, że płeć nie powinna mieć wpływu na decyzje kredytową.
+
+Braki w kolumnie Dependents mogą oznaczać świadome pominięcie pytania w obawie przed negatywnym wpływem odpowiedzi na zdolność kredytową lub po prostu z braku obowiązku. 
+
+
+Wracając do wykresu przecięć wartości - Kombinacje z małą liczbą braków mogą być przypadkowe i niekoniecznie oznaczają zależności.
+
+Kombinacja między Self_Employment i Credit_History również występuje niewiele razy - 5. Jednak, jako że jest to najczęściej występująca kombinacja, zostanie ona rozważona jako potencjalny związek. 
+Może on być związany z obawą o negatywną ocenę zdolności kredytowej (jako że samozatrudnienie jest bardziej ryzykowne) i tym samym obawą o niższej kwocie kredytu lub wyższym oprocentowaniu. A także z trudnościami w uzyskaniu kredytów w przeszłości, co prowadzi do niekorzystnych danych w historii kredytowej.W takim wypadku, kredytobiorcy celowo nie podawaliby statusu samozatrudnienia i składaliby prośbę o wyższe kwoty kredytu, w nadziei, że bank uzna ich za zatrudnionych na pełen etat bez historii kredytowej.
 
 ### Analiza relacji brakujących wartości
 ```{r}
-
+library(ggplot2)
+ggplot(data = dane, aes(x = Credit_History, y = LoanAmount)) +
+  geom_point() +
+  geom_miss_point() +
+  scale_color_manual(values = c("deepskyblue3","mediumpurple2")) +
+  theme_minimal() +
+  facet_wrap(~Self_Employed, scales = "free")
 ```
+Można zauważyć, że z pośród kredytobiorców z wartością NA w kolumnie Self_Employment oraz w kolumnie Credit_History, niemalże wszyscy (poza jednym przypadkiem z brakiem danych również w kolumnie LoanAmount) mają wartości w kolumnie LoanAmount powyżej 150, czyli większe niż w innych grupach.
 
-### Ocena wzorców braków danych dla poszczególnych kolumn
+To może być argumentem za przyjęciem tezy, że osoby, które nie odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
 
 ## 3. Uzupełnianie braków danych
 ### Autor: 
