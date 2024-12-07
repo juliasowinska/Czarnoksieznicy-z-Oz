@@ -128,3 +128,58 @@ dane$Self_Employed[is.na(dane$Self_Employed)] <- "Yes"
 ```{r}
 n_miss(dane) # Returns NA count in your data frame or column
 ```
+
+## 4. Identyfikacja i usunięcie nieprawidłowych wartości
+### Autor: 
+
+### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych)
+```{r}
+
+```
+
+### Sprawdzenie rozkładów zmiennych i ich statystyki opisowe
+```{r}
+
+```
+
+### Wykrycie i usunięcie/przekształcenie wartości odstających
+```{r}
+
+```
+
+## 5. Poprawa typów danych
+### Autor: 
+
+### Podstawowe dostosowanie typów danych i jednostek 
+```{r}
+
+```
+
+### Przkształcenie typów danych zmiennych kategorycznych
+```{r}
+
+```
+
+### Niezbędne przekształcenia log-transform
+```{r}
+
+```
+
+## 6. Wzbogacenie danych i finalna weryfikacja
+### Autor: 
+
+### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne)
+```{r}
+
+```
+
+### Sprawdzenie rozkładów nowych zmiennych i ich statystyki opisowe
+```{r}
+
+```
+
+### Zapisanie przygotowanych danych do nowego pliku csv
+```{r}
+
+```
+
