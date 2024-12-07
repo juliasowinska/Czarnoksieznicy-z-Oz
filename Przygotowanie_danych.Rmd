@@ -9,16 +9,12 @@ dane <- read.csv("Hipoteczny.csv", header = TRUE)
 dane[dane == ""] <- NA
 View(dane)
 
+dane <- as.data.frame(dane)
+
 ```
 
 ## 1. Identyfikacja brakujących danych
 ### Autor: Dominika Szymczak
-
-#### Instalowanie potrzebnych pakietów
-```{r}
-install.packages("naniar")
-
-```
 
 ### Sprawdzenie, które kolumny zawierają brakujące wartości
 ```{r}
@@ -56,8 +52,6 @@ Kolumna Credit_History ma największy odsetek braków w kategorii NA w Self_Empl
 
 ### Analiza przecięć brakujących wartości
 ```{r}
-dane <- as.data.frame(dane)
-
 gg_miss_upset(dane, nsets = 7)
 ```
 Wykres potwierdza poprzednie wyniki o dominacji pojedynczych zbiorach braków. 
@@ -101,16 +95,36 @@ Można zauważyć, że z pośród kredytobiorców z wartością NA w kolumnie Se
 To może być argumentem za przyjęciem tezy, że osoby, które nie odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
 
 ## 3. Uzupełnianie braków danych
-### Autor: 
+### Autor: Mikołaj Zalewski
 
 ### Decyzja o strategii postępowania z brakującymi danymi
+Obseracje z brakiem danych w kolumnie Credit_History zastąpimy wartością 0 zgodnie z naszymi wcześniejszymi wnioskami.
+Obserwacje z brakiem danych w kolumnie LoanAmount uzupełnione będą wartościami mediany. Użycie mediany zamiast średniej wyeliminuje problem zbyt dużych wartości skrajnych.
+Obserwacje z brakiem danych w kolumnach Gender i Married zostaną zastąpione wartością "undefined", czyli po polsku "nieokreślone". Każdy wniosek o kredyt jest ważny, więc usuwanie obserwacji nie jest dobrym rozwiązaniem.
+Obserwacje z brakiem danych w kolumnie Dependents zostaną zastąpione wartością 0.
+Dla obserwacji z brakiem danych w kolumnie Loan_Amount_Term można przyjąć strategię inputacji wartością, która występuje w znaczącej większości obserwacji, czyli najpopularniejszym czasem, na jaki bierze się kredyt (czyli 360 dni).
+Obserwacje z brakiem danych w kolumnie Self_Employed zgodnie z naszą wcześniej opisaną tezą zamieniamy na wartość "Yes", czyli samozatrudnienie.
 
 ### Przeprowadzenie powyższej strategii
 ```{r}
-
+### Uzupełnienie zmiennej Credit_History
+dane$Credit_History[is.na(dane$Credit_History)] <- 0
+### Uzupełnienie zmniennej LoanAmount
+medina_kredyt <- median(dane$LoanAmount, na.rm = TRUE) #zrobienie obiektu zawierającego medianę z wszystkich wyników LoanAmount wyłączając NA
+dane$LoanAmount[is.na(dane$LoanAmount)] <- medina_kredyt
+### Uzupełnienie zmniennej Gender
+dane$Gender[is.na(dane$Gender)] <- "Undefined"
+### Uzupełnienie zmniennej Married
+dane$Married[is.na(dane$Married)] <- "Undefined"
+### Uzupełnienie zmniennej Dependents
+dane$Dependents[is.na(dane$Dependents)] <- 0
+### Uzupełnienie zmniennej Loan_Amount_Term
+dane$Loan_Amount_Term[is.na(dane$Loan_Amount_Term)] <- 360
+### Uzupełnienie zmniennej Self_Employed
+dane$Self_Employed[is.na(dane$Self_Employed)] <- "Yes"
 ```
 
 ### Weryfikacja poprawności
 ```{r}
-
+n_miss(dane) # Returns NA count in your data frame or column
 ```
