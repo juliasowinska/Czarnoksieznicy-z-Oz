@@ -130,21 +130,147 @@ n_miss(dane) # Returns NA count in your data frame or column
 ```
 
 ## 4. Identyfikacja i usunięcie nieprawidłowych wartości
-### Autor: 
+### Autor: Dominika Szymczak
 
-### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych)
+Na tym etapie sprawdzić należy, czy nasz zbiór danych zawiera wartości logiczne. Wprowadzone zostają ograniczenia dla zmiennych:
+- ApplicantIncome powinna być większa lub równa 0
+- CoapplicantIncome powinna być większa lub równa 0
+- LoanAmount powinna być większa lub równa 0
+- Loan_Amount_term powinna być większa od 0
+- Credit_History powinna być 0 lub 1
+
+### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych) dla wartości numerycznych
 ```{r}
+library(editrules)
+ograniczenia <- editset(c("0 <= ApplicantIncome",
+                          "0 <= CoapplicantIncome",
+                          "0 < LoanAmount",
+                          "0 < Loan_Amount_Term"))
+
+dane$Credit_History <- factor(dane$Credit_History, 
+                               levels = c(0, 1), 
+                               labels = c("Not existing", "Existing"))
+
+summary(violatedEdits(ograniczenia, dane))
+n_miss(dane$Credit_History)
 
 ```
+Dla danych numerycznych wprowadzone zostały ograniczenia:
+- dla zmiennej ApplicantIncome wartości nie mogą być mniejsze niż 0
+- dla zmiennej CoapplicantIncome wartości nie mogą być mniejsze niż 0
+- dla zmiennej LoanAmount wartości nie mogą być mniejsze lub równe 0
+- dla zmiennej Loan_Amount_Term wartości nie mogą być mniejsze niż 0
+
+Dla rekordów, których wartości nie spełniały ograniczeń przypisane powinny zostać wartości NA. Jednak w tym przypadku, wszystkie wartości zmiennych spełniały założone ograniczenia i nie ma potrzeby przeprowadzenia dalszego przekształacania tych danych.
+
+### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych) dla wartości tekstowych
+```{r}
+dane$Gender <- factor(dane$Gender,
+                      levels = c("Male", "Female", "Undefined"),
+                      labels = c("Male", "Female", "Undefined"))
+dane$Married <- factor(dane$Married,
+                       levels = c("No", "Yes", "Undefined"),
+                       labels = c("No", "Yes", "Undefined"))
+dane$Dependents <- factor(dane$Dependents,
+                          levels = c("0", "1", "2", "3", "3+"),
+                          labels = c("0", "1", "2", "3", "3+"))
+dane$Education <- factor(dane$Education,
+                         levels = c("Not Graduate", "Graduate"),
+                         labels = c("Not Graduate", "Graduate"))
+dane$Self_Employed <- factor(dane$Self_Employed,
+                             levels = c("No", "Yes"),
+                             labels = c("No", "Yes"))
+dane$Property_Area <- factor(dane$Property_Area,
+                             levels = c("Rural", "Semiurban", "Urban"),
+                             labels = c("Rural", "Semiurban", "Urban"))
+dane$Loan_Status <- factor(dane$Loan_Status,
+                           levels = c("N", "Y"),
+                           labels = c("No", "Yes"))
+
+n_miss(dane$Gender)
+n_miss(dane$Married)
+n_miss(dane$Dependents)
+n_miss(dane$Education)
+n_miss(dane$Self_Employed)
+n_miss(dane$Property_Area)
+n_miss(dane$Loan_Status)
+
+```
+Dla danych tekstowych, tak jak dla danych numerycznych nie znlaeziono żadnych odstających od założeń wartości i nie ma potrzeby przeprowadzenia dalszego przekształacania tych danych.
 
 ### Sprawdzenie rozkładów zmiennych i ich statystyki opisowe
 ```{r}
+library(ggplot2)
+library(patchwork)
+
+summary(dane)
+
+plot_Gender <- ggplot(dane, aes(x = as.factor(Gender))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Gender", x = "Gender", y = "Liczność")
+plot_Married <- ggplot(dane, aes(x = as.factor(Married))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Married", x = "Married", y = "Liczność")
+plot_Dependents <- ggplot(dane, aes(x = as.factor(Dependents))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Dependents", x = "Dependents", y = "Liczność")
+plot_Education <- ggplot(dane, aes(x = as.factor(Education))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Education", x = "Education", y = "Liczność")
+plot_Self_Employed <- ggplot(dane, aes(x = as.factor(Self_Employed))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Self_Employed", x = "Self_Employed", y = "Liczność")
+plot_Credit_History <- ggplot(dane, aes(x = as.factor(Credit_History))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Credit_History", x = "Credit_History", y = "Liczność")
+plot_Property_Area <- ggplot(dane, aes(x = as.factor(Property_Area))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Property_Area", x = "Property_Area", y = "Liczność")
+plot_Loan_Status <- ggplot(dane, aes(x = as.factor(Loan_Status))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Loan_Status", x = "Loan_Status", y = "Liczność")
+
+plot_ApplicantIncome <- ggplot(dane, aes(x = ApplicantIncome)) +
+  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+  labs(title = "Rozkład ApplicantIncome", x = "ApplicantIncome", y = "Częstotliwość")
+plot_CoapplicantIncome <- ggplot(dane, aes(x = CoapplicantIncome)) +
+  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+  labs(title = "Rozkład CoapplicantIncome", x = "CoapplicantIncome", y = "Częstotliwość")
+plot_LoanAmount <- ggplot(dane, aes(x = LoanAmount)) +
+  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+  labs(title = "Rozkład LoanAmount", x = "LoanAmount", y = "Częstotliwość")
+plot_Loan_Amount_Term <- ggplot(dane, aes(x = Loan_Amount_Term)) +
+  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+  labs(title = "Rozkład Loan_Amount_Term", x = "Loan_Amount_Term", y = "Częstotliwość")
+
+combined_plots_charcter <- plot_Gender + plot_Married + plot_Dependents + plot_Education + plot_Self_Employed + plot_Credit_History + plot_Property_Area + plot_Loan_Status
+
+combined_plots_numeric <- plot_ApplicantIncome + plot_CoapplicantIncome + plot_LoanAmount +plot_Loan_Amount_Term
+
+combined_plots_charcter
+combined_plots_numeric
 
 ```
+W zmiennej Gender dominującą kategorią są mężczyźni (489 przypadków), natomiast kobiet jest 112, a w 13 przypadkach płeć nie została określona. W odniesieniu do zmiennej Married, większość osób to osoby w związku małżeńskim (398), podczas gdy niezamężnych jest 213, a 3 przypadki pozostają niezdefiniowane.
+
+Zmienna Dependents, określająca liczbę osób na utrzymaniu, wskazuje, że najwięcej respondentów (360) nie posiada osób na utrzymaniu, 102 osoby deklarują jedną osobę na utrzymaniu, 101 osób dwie, a 51 osób trzy lub więcej. Brak natomiast deklaracji dla dokładnie trzech osób. W odniesieniu do zmiennej Education, większość osób posiada wykształcenie wyższe (480), a 134 osoby mają niższy poziom wykształcenia.
+
+W przypadku zmiennej Self_Employed, 500 osób zadeklarowało, że nie prowadzi działalności gospodarczej, a 114 osób to osoby samozatrudnione. Zmienna ApplicantIncome, opisująca dochód głównego wnioskodawcy, wskazuje na wartości od 150 do 81 000, przy czym mediana wynosi 3812, a średnia 5403, co wskazuje na obecność wartości odstających. Dochód współwnioskodawcy (CoapplicantIncome) jest w wielu przypadkach równy 0 (25. percentyl to 0), co oznacza, że wiele osób nie posiada współwnioskodawcy. Mediana wynosi 1188, średnia to 1621, a maksymalna wartość wynosi 41 667.
+
+Zmienna LoanAmount, określająca kwotę pożyczki, ma wartości od 9 do 700, przy medianie 128 i średniej 145,8, co również sugeruje obecność wartości odstających. Loan_Amount_Term, opisująca czas spłaty pożyczki w miesiącach, waha się od 12 do 480 miesięcy, z medianą 360 miesięcy (30 lat).
+ 
+Historia kredytowa (Credit_History) wskazuje, że większość wnioskodawców (około 77,4%) posiada pozytywną historię kredytową (wartość 1). Rozkład zmiennej Property_Area, opisującej obszar zamieszkania, pokazuje, że 179 osób mieszka na terenach wiejskich, 233 w obszarach półmiejskich, a 202 w miastach. Zmienna Loan_Status, opisująca status wniosku o pożyczkę, wskazuje, że większość wniosków (422) została zatwierdzona, a 192 odrzucono.
 
 ### Wykrycie i usunięcie/przekształcenie wartości odstających
 ```{r}
+boxplot(dane$LoanAmount, main = "Boxplot LoanAmount", horizontal = TRUE)
 
+
+
+??? wiecie jak to zrobić albo macie pomysł jak to zrobić sprawnie ???
+  
+  
+  
 ```
 
 ## 5. Poprawa typów danych
