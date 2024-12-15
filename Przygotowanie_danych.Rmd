@@ -130,12 +130,12 @@ n_miss(dane) # Returns NA count in your data frame or column
 ```
 
 ## 4. Identyfikacja i usunięcie nieprawidłowych wartości
-### Autor: Dominika Szymczak
+### Autor: Dominika Szymczak i Julia Sowińska
 
 Na tym etapie sprawdzić należy, czy nasz zbiór danych zawiera wartości logiczne. Wprowadzone zostają ograniczenia dla zmiennych:
 - ApplicantIncome powinna być większa lub równa 0
 - CoapplicantIncome powinna być większa lub równa 0
-- LoanAmount powinna być większa lub równa 0
+- LoanAmount powinna być większa od 0
 - Loan_Amount_term powinna być większa od 0
 - Credit_History powinna być 0 lub 1
 
@@ -152,7 +152,7 @@ dane$Credit_History <- factor(dane$Credit_History,
                                labels = c("Not existing", "Existing"))
 
 summary(violatedEdits(ograniczenia, dane))
-n_miss(dane$Credit_History)
+table(dane$Credit_History) 
 
 ```
 Dla danych numerycznych wprowadzone zostały ograniczenia:
@@ -172,14 +172,17 @@ dane$Married <- factor(dane$Married,
                        levels = c("No", "Yes", "Undefined"),
                        labels = c("No", "Yes", "Undefined"))
 dane$Dependents <- factor(dane$Dependents,
-                          levels = c("0", "1", "2", "3", "3+"),
-                          labels = c("0", "1", "2", "3", "3+"))
+                          levels = c("0", "1", "2", "3+"),
+                          labels = c("0", "1", "2", "3+"))
 dane$Education <- factor(dane$Education,
                          levels = c("Not Graduate", "Graduate"),
                          labels = c("Not Graduate", "Graduate"))
 dane$Self_Employed <- factor(dane$Self_Employed,
                              levels = c("No", "Yes"),
                              labels = c("No", "Yes"))
+dane$Loan_Amount_Term <- factor(dane$Loan_Amount_Term,
+                           levels = c("12", "36", "60", "84", "120", "180", "240", "300", "360", "480"),
+                           labels = c("1", "3", "5", "7", "10", "15", "20", "25", "30", "40"))
 dane$Property_Area <- factor(dane$Property_Area,
                              levels = c("Rural", "Semiurban", "Urban"),
                              labels = c("Rural", "Semiurban", "Urban"))
@@ -187,14 +190,14 @@ dane$Loan_Status <- factor(dane$Loan_Status,
                            levels = c("N", "Y"),
                            labels = c("No", "Yes"))
 
-n_miss(dane$Gender)
-n_miss(dane$Married)
-n_miss(dane$Dependents)
-n_miss(dane$Education)
-n_miss(dane$Self_Employed)
-n_miss(dane$Property_Area)
-n_miss(dane$Loan_Status)
-
+table(dane$Gender) 
+table(dane$Married) 
+table(dane$Dependents) 
+table(dane$Education) 
+table(dane$Self_Employed) 
+table(dane$Loan_Amount_Term) 
+table(dane$Property_Area) 
+table(dane$Loan_Status) 
 ```
 Dla danych tekstowych, tak jak dla danych numerycznych nie znlaeziono żadnych odstających od założeń wartości i nie ma potrzeby przeprowadzenia dalszego przekształacania tych danych.
 
@@ -220,6 +223,9 @@ plot_Education <- ggplot(dane, aes(x = as.factor(Education))) +
 plot_Self_Employed <- ggplot(dane, aes(x = as.factor(Self_Employed))) +
   geom_bar(fill = "skyblue") +
   labs(title = "Rozkład Self_Employed", x = "Self_Employed", y = "Liczność")
+plot_Loan_Amount_Term <- ggplot(dane, aes(x = Loan_Amount_Term)) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Rozkład Loan_Amount_Term", x = "Loan_Amount_Term", y = "Liczność")
 plot_Credit_History <- ggplot(dane, aes(x = as.factor(Credit_History))) +
   geom_bar(fill = "skyblue") +
   labs(title = "Rozkład Credit_History", x = "Credit_History", y = "Liczność")
@@ -239,21 +245,50 @@ plot_CoapplicantIncome <- ggplot(dane, aes(x = CoapplicantIncome)) +
 plot_LoanAmount <- ggplot(dane, aes(x = LoanAmount)) +
   geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
   labs(title = "Rozkład LoanAmount", x = "LoanAmount", y = "Częstotliwość")
-plot_Loan_Amount_Term <- ggplot(dane, aes(x = Loan_Amount_Term)) +
-  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
-  labs(title = "Rozkład Loan_Amount_Term", x = "Loan_Amount_Term", y = "Częstotliwość")
 
-combined_plots_charcter <- plot_Gender + plot_Married + plot_Dependents + plot_Education + plot_Self_Employed + plot_Credit_History + plot_Property_Area + plot_Loan_Status
 
-combined_plots_numeric <- plot_ApplicantIncome + plot_CoapplicantIncome + plot_LoanAmount +plot_Loan_Amount_Term
+combined_plots_charcter <- plot_Gender + plot_Married + plot_Dependents + plot_Education + plot_Self_Employed + plot_Loan_Amount_Term + plot_Credit_History + plot_Property_Area + plot_Loan_Status
+
+combined_plots_numeric <- plot_ApplicantIncome + plot_CoapplicantIncome + plot_LoanAmount
 
 combined_plots_charcter
 combined_plots_numeric
 
 ```
+```{r}
+plot_variables <- list(
+  "Gender" = "Rozkład Gender",
+  "Married" = "Rozkład Married",
+  "Dependents" = "Rozkład Dependents",
+  "Education" = "Rozkład Education",
+  "Self_Employed" = "Rozkład Self_Employed",
+  "Loan_Amount_Term" = "Rozkład Loan_Amount_Term",
+  "Credit_History" = "Rozkład Credit_History",
+  "Property_Area" = "Rozkład Property_Area",
+  "Loan_Status" = "Rozkład Loan_Status"
+)
+
+plot_list <- lapply(names(plot_variables), function(var) {
+  ggplot(dane, aes_string(x = var)) +
+    geom_bar(fill = "skyblue") +
+    labs(title = plot_variables[[var]], x = var, y = "Liczność")
+})
+
+num_plot_vars <- c("ApplicantIncome", "CoapplicantIncome", "LoanAmount")
+num_plot_list <- lapply(num_plot_vars, function(var) {
+  ggplot(dane, aes_string(x = var)) +
+    geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+    labs(title = paste("Rozkład", var), x = var, y = "Częstotliwość")
+})
+
+combined_plots <- c(plot_list, num_plot_list) %>%
+  do.call(cowplot::plot_grid, .)
+combined_plots
+```
+
 W zmiennej Gender dominującą kategorią są mężczyźni (489 przypadków), natomiast kobiet jest 112, a w 13 przypadkach płeć nie została określona. W odniesieniu do zmiennej Married, większość osób to osoby w związku małżeńskim (398), podczas gdy niezamężnych jest 213, a 3 przypadki pozostają niezdefiniowane.
 
-Zmienna Dependents, określająca liczbę osób na utrzymaniu, wskazuje, że najwięcej respondentów (360) nie posiada osób na utrzymaniu, 102 osoby deklarują jedną osobę na utrzymaniu, 101 osób dwie, a 51 osób trzy lub więcej. Brak natomiast deklaracji dla dokładnie trzech osób. W odniesieniu do zmiennej Education, większość osób posiada wykształcenie wyższe (480), a 134 osoby mają niższy poziom wykształcenia.
+Zmienna Dependents, określająca liczbę osób na utrzymaniu, wskazuje, że najwięcej respondentów (360) nie posiada osób na utrzymaniu, 102 osoby deklarują jedną osobę na utrzymaniu, 101 osób dwie, a 51 osób trzy lub więcej. W odniesieniu do zmiennej Education, większość osób posiada wykształcenie wyższe (480), a 134 osoby mają niższy poziom wykształcenia.
 
 W przypadku zmiennej Self_Employed, 500 osób zadeklarowało, że nie prowadzi działalności gospodarczej, a 114 osób to osoby samozatrudnione. Zmienna ApplicantIncome, opisująca dochód głównego wnioskodawcy, wskazuje na wartości od 150 do 81 000, przy czym mediana wynosi 3812, a średnia 5403, co wskazuje na obecność wartości odstających. Dochód współwnioskodawcy (CoapplicantIncome) jest w wielu przypadkach równy 0 (25. percentyl to 0), co oznacza, że wiele osób nie posiada współwnioskodawcy. Mediana wynosi 1188, średnia to 1621, a maksymalna wartość wynosi 41 667.
 
@@ -263,43 +298,88 @@ Historia kredytowa (Credit_History) wskazuje, że większość wnioskodawców (o
 
 ### Wykrycie i usunięcie/przekształcenie wartości odstających
 ```{r}
-boxplot(dane$LoanAmount, main = "Boxplot LoanAmount", horizontal = TRUE)
+library(dplyr)
 
+z_score <- function(x) {
+  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+}
 
+dane_outliers <- dane %>%
+  mutate(
+    z_score_ApplicantIncome = z_score(ApplicantIncome),
+    z_score_CoapplicantIncome = z_score(CoapplicantIncome),
+    z_score_LoanAmount = z_score(LoanAmount),
+  )
 
-??? wiecie jak to zrobić albo macie pomysł jak to zrobić sprawnie ???
-  
-  
-  
+z_outliers_ApplicantIncome <- dane_outliers[dane_outliers$z_score_ApplicantIncome > 3 | dane_outliers$z_score_ApplicantIncome < -3, ]
+z_outliers_CoapplicantIncome <- dane_outliers[dane_outliers$z_score_CoapplicantIncome > 3 | dane_outliers$z_score_CoapplicantIncome < -3, ]
+z_outliers_LoanAmount <- dane_outliers[dane_outliers$z_score_LoanAmount > 3 | dane_outliers$z_score_LoanAmount < -3, ]
+
+outliers <- function(df, col) {
+  Q1 <- quantile(df[[col]], 0.25, na.rm = TRUE)
+  Q3 <- quantile(df[[col]], 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  bottom <- Q1 - 1.5 * IQR
+  top <- Q3 + 1.5 * IQR
+  df2 <- df %>%
+    filter(df[[col]] < bottom | df[[col]] > top)
+  return(df2)
+}
+
+iqr_outliers_ApplicantIncome <- outliers(dane_outliers, "ApplicantIncome")
+iqr_outliers_CoapplicantIncome <- outliers(dane_outliers, "CoapplicantIncome")
+iqr_outliers_LoanAmount <- outliers(dane_outliers, "LoanAmount")
+
+common_outliers_ApplicantIncome <- intersect(
+  z_outliers_ApplicantIncome, iqr_outliers_ApplicantIncome)
+common_outliers_CoapplicantIncome <- intersect(
+  z_outliers_CoapplicantIncome, iqr_outliers_CoapplicantIncome)
+common_outliers_LoanAmount <- intersect(
+  z_outliers_LoanAmount, iqr_outliers_LoanAmount)
+
+common_outliers_ApplicantIncome
+common_outliers_CoapplicantIncome
+common_outliers_LoanAmount
 ```
+W celu wykrycia wartości odstających posłużono się kombinacją dwóch metod - metody Z-score (gdzie wartość jest odstająca, jeśli jej odległość od średniej w jednostkach odchylenia standardowego jest większa niż 3 lub mniejsza niż -3) oraz metoda IQR (gdzie wartość jest odstająca, jeśli znajduje się poniżej dolnej granicY Q1−1.5×IQR lub powyżej górnej granicy Q3+1.5×IQR). Aby porównać wyniki obu metod, wybraliśmy te wiersze, które zostały uznane za wartości odstające zarówno przez metodę Z-score, jak i przez metodę IQR. 
 
-## 5. Poprawa typów danych
-### Autor: 
-
-### Podstawowe dostosowanie typów danych i jednostek 
-```{r}
-
-```
-
-### Przkształcenie typów danych zmiennych kategorycznych
-```{r}
-
-```
+W ten sposób doszliśmy do wniosków: 
+- zmienna ApplicantIncome ma 8 wartości odstających, które jednak reprezentują sobą osoby o bardzo wysokich dochodach (które mogłyby być wartościowymi kredytobiorcami) - dlatego postanowiliśmy pozostawić te wartości bez zmian;
+- zmienna CoapplicantIncome ma 6 wartości odstających, które reprezentują sobą osoby, których współkredytobiorca ma wysokie dochody (dochody te jednak mieszczą się w większości w średniej wartości zmiennej ApplicantIncome) - dlatego te wartości też postanowiliśmy pozostawić bez zmian;
+- zmienna LoanAmount ma 15 wartości odstających, które jednak reprezentują sobą osoby składające wnioski o najwyższe kwoty kredytu (które różnież mogłyby być wartościowymi klientami firmy) - dlatego te wartości także postanowiliśmy pozostawić bez zmian.
 
 ### Niezbędne przekształcenia log-transform
 ```{r}
+dane <- dane %>%
+  mutate(
+    log_ApplicantIncome = log1p(ApplicantIncome),
+    log_CoapplicantIncome = log1p(CoapplicantIncome),
+    log_LoanAmount = log1p(LoanAmount),
+  )
 
+log_plot_vars <- c("log_ApplicantIncome", "log_CoapplicantIncome", "log_LoanAmount")
+log_plot_list <- lapply(log_plot_vars, function(var) {
+  ggplot(dane, aes_string(x = var)) +
+    geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+    labs(title = paste("Rozkład", var), x = var, y = "Częstotliwość")
+})
+
+combined_plots <- log_plot_list %>%
+  do.call(cowplot::plot_grid, .)
+combined_plots
 ```
 
-## 6. Wzbogacenie danych i finalna weryfikacja
+Ze względu na dużą skośność w rozkładach zmiennych ApplicantIncome, CoapplicantIncome i LoanAmout postanowiono wprowadzić także zmienne reprezentujące ich log-transformację. Ze względu na możliwe zera w tych kolumnach zdecydowaliśmy się na funkcję log1p() zamiast log() (log(0) jest niezdefiniowane). Na wykresach przedstawiających rozkłady tych zlogarytmowanych zmiennych, można zauważyć, że po transformacji rozkłady te zbliżyły się zdecydowanie do rozkładu normalnego. Jedynie w przypadku zmiennej log_CoapplicantIncome można nadal zauważyć dość dużą skośność, spowodowaną dużą liczbą ludzi składających wniosek o kredyt samodzielnie lub wraz z współkredytobiorcą bez dochodów.
+
+## 5. Wzbogacenie danych i finalna weryfikacja
 ### Autor: 
 
-### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne)
+### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne) i sprawdzenie ich rozkładów oraz statystyk opisowych
 ```{r}
 
 ```
 
-### Sprawdzenie rozkładów nowych zmiennych i ich statystyki opisowe
+### Analiza warości odstających oraz potencjalnej konieczności log-transform nowych zmiennych
 ```{r}
 
 ```
