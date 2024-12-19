@@ -372,20 +372,58 @@ combined_plots
 Ze względu na dużą skośność w rozkładach zmiennych ApplicantIncome, CoapplicantIncome i LoanAmout postanowiono wprowadzić także zmienne reprezentujące ich log-transformację. Ze względu na możliwe zera w tych kolumnach zdecydowaliśmy się na funkcję log1p() zamiast log() (log(0) jest niezdefiniowane). Na wykresach przedstawiających rozkłady tych zlogarytmowanych zmiennych, można zauważyć, że po transformacji rozkłady te zbliżyły się zdecydowanie do rozkładu normalnego. Jedynie w przypadku zmiennej log_CoapplicantIncome można nadal zauważyć dość dużą skośność, spowodowaną dużą liczbą ludzi składających wniosek o kredyt samodzielnie lub wraz z współkredytobiorcą bez dochodów.
 
 ## 5. Wzbogacenie danych i finalna weryfikacja
-### Autor: 
+### Autor: Mikołaj Zalewski
 
 ### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne) i sprawdzenie ich rozkładów oraz statystyk opisowych
 ```{r}
+dane2 <- read.csv("HipotecznyPoprawiony", header = TRUE)
+View(dane2)
+dane2$TotalIncome <- dane2$ApplicantIncome + dane2$CoapplicantIncome ## stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego się o kredyt
+head(dane2)
+dane2$DebtToIncomeRatio <-dane2$LoanAmount / dane2$TotalIncome ## stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa domowego
+head(dane2)
 
 ```
 
 ### Analiza warości odstających oraz potencjalnej konieczności log-transform nowych zmiennych
 ```{r}
+z_score <- function(x) {
+  (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+}
+dane_outliers <- dane2 %>%
+  mutate(
+    z_score_TotalIncome = z_score(TotalIncome),
+    z_score_DebtToIncomeRatio = z_score(DebtToIncomeRatio),
+  )
+z_outliers_TotalIncome <- dane_outliers[dane_outliers$z_score_TotalIncome > 3 | dane_outliers$z_score_TotalIncome < -3, ]
+z_outliers_DebtToIncomeRatio <- dane_outliers[dane_outliers$z_score_DebtToIncomeRatio > 3 | dane_outliers$z_score_DebtToIncomeRatio < -3, ]
+
+outliers <- function(df, col) {
+  Q1 <- quantile(df[[col]], 0.25, na.rm = TRUE)
+  Q3 <- quantile(df[[col]], 0.75, na.rm = TRUE)
+  IQR <- Q3 - Q1
+  bottom <- Q1 - 1.5 * IQR
+  top <- Q3 + 1.5 * IQR
+  df2 <- df %>%
+    filter(df[[col]] < bottom | df[[col]] > top)
+  return(df2)
+}
+iqr_outliers_TotalIncome <- outliers(dane_outliers, "TotalIncome")
+iqr_outliers_DebtToIncomeRatio <- outliers(dane_outliers, "DebtToIncomeRatio")
+
+common_outliers_TotalIncome <- intersect(
+  z_outliers_TotalIncome, iqr_outliers_TotalIncome)
+common_outliers_DebtToIncomeRatio <- intersect(
+  z_outliers_DebtToIncomeRatio, iqr_outliers_DebtToIncomeRatio)
+
+common_outliers_TotalIncome
+common_outliers_DebtToIncomeRatio
+## Zmienna totalIncome ma 10 wartości odstających, jednakże tak samo jak w przypadku zmiennych 
+## ApplicantIncome oraz CoapplicantIncome są to osoby z wysokimi zarobkami więc postanwoiliśmy zostawić je bez zmian
 
 ```
 
 ### Zapisanie przygotowanych danych do nowego pliku csv
 ```{r}
-
 ```
 
