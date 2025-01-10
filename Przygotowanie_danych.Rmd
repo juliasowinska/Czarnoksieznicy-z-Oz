@@ -127,6 +127,7 @@ dane$Self_Employed[is.na(dane$Self_Employed)] <- "Yes"
 ### Weryfikacja poprawności
 ```{r}
 n_miss(dane) # Returns NA count in your data frame or column
+
 ```
 
 ## 4. Identyfikacja i usunięcie nieprawidłowych wartości
@@ -376,12 +377,12 @@ Ze względu na dużą skośność w rozkładach zmiennych ApplicantIncome, Coapp
 
 ### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne) i sprawdzenie ich rozkładów oraz statystyk opisowych
 ```{r}
-dane2 <- read.csv("HipotecznyPoprawiony", header = TRUE)
-View(dane2)
-dane2$TotalIncome <- dane2$ApplicantIncome + dane2$CoapplicantIncome ## stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego się o kredyt
-head(dane2)
-dane2$DebtToIncomeRatio <-dane2$LoanAmount / dane2$TotalIncome ## stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa domowego
-head(dane2)
+dane <- read.csv("Hipoteczny.csv", header = TRUE)
+View(dane)
+dane$TotalIncome <- dane$ApplicantIncome + dane$CoapplicantIncome ## stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego się o kredyt
+head(dane)
+dane$DebtToIncomeRatio <-dane$LoanAmount / dane$TotalIncome ## stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa domowego
+head(dane)
 
 ```
 
@@ -390,7 +391,7 @@ head(dane2)
 z_score <- function(x) {
   (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
 }
-dane_outliers <- dane2 %>%
+dane_outliers <- dane %>%
   mutate(
     z_score_TotalIncome = z_score(TotalIncome),
     z_score_DebtToIncomeRatio = z_score(DebtToIncomeRatio),
@@ -421,9 +422,27 @@ common_outliers_DebtToIncomeRatio
 ## Zmienna totalIncome ma 10 wartości odstających, jednakże tak samo jak w przypadku zmiennych 
 ## ApplicantIncome oraz CoapplicantIncome są to osoby z wysokimi zarobkami więc postanwoiliśmy zostawić je bez zmian
 
+## przekształcenie danych log transform
+dane <- dane %>%
+  mutate(
+    log_TotalIncome = log1p(TotalIncome),
+    log_DebtToIncomeRatio = log1p(DebtToIncomeRatio),
+  )
+
+log_plot_vars <- c("TotalIncome", "DebtToIncomeRatio")
+log_plot_list <- lapply(log_plot_vars, function(var) {
+  ggplot(dane, aes_string(x = var)) +
+    geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+    labs(title = paste("Rozkład", var), x = var, y = "Częstotliwość")
+})
+
+combined_plots <- log_plot_list %>%
+  do.call(cowplot::plot_grid, .)
+combined_plots
 ```
 
 ### Zapisanie przygotowanych danych do nowego pliku csv
 ```{r}
+write.csv(dane, "DanePoprawione.csv", row.names = FALSE)
 ```
 
