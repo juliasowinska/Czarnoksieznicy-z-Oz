@@ -1,0 +1,225 @@
+---
+title: "Analiza danych"
+author: "Czarnoksiężnicy z Oz"
+date: Opublikowane `r format(Sys.time(), "%A %d %B %Y")`
+---
+## Dane
+```{r}
+dane <- read.csv("DanePoprawione.csv", header = TRUE)
+dane[dane == ""] <- NA
+View(dane)
+
+dane <- as.data.frame(dane)
+
+```
+
+## 1. Jednowymiarowa analiza danych
+### Autor: Mikołaj Zalewski
+
+``` {r}
+## zmienna Applicant income
+## statystki opisowe
+summary(dane$ApplicantIncome)
+## histogram
+hist(dane$ApplicantIncome,
+     main = "Histogram zmiennej ApplicantIncome",   
+     xlab = "Wartości",         
+     ylab = "Częstotliwość",     
+     col = "blue",               
+     border = "black") 
+## wykres pudelkowy
+boxplot(dane$ApplicantIncome, 
+        main = "Wykres pudełkowy dla zmiennej ApplicantIncome",  
+        ylab = "Wartości",          
+        col = "yellow",          
+        border = "black") 
+
+## zmienna Coapplicant income
+## statystki opisowe
+summary(dane$CoapplicantIncome)
+## histogram
+hist(dane$CoapplicantIncome,
+     main = "Histogram zmiennej ApplicantIncome",   
+     xlab = "Wartości",         
+     ylab = "Częstotliwość",     
+     col = "blue",               
+     border = "black") 
+## wykres pudelkowy
+boxplot(dane$CoapplicantIncome, 
+        main = "Wykres pudełkowy dla zmiennej ApplicantIncome",  
+        ylab = "Wartości",          
+        col = "yellow",          
+        border = "black") 
+
+##zmienna loan amount term 
+## statystki opisowe
+summary(dane$Loan_Amount_Term)
+## histogram
+hist(dane$Loan_Amount_Term,
+     main = "Histogram zmiennej Loan_Amount_Term",   
+     xlab = "Wartości",         
+     ylab = "Częstotliwość",     
+     col = "blue",               
+     border = "yellow") 
+## wykres pudelkowy
+boxplot(dane$ApplicantIncome, 
+        main = "Wykres pudełkowy dla zmiennej Loan_Amount_Term",  
+        ylab = "Wartości",          
+        col = "yellow",          
+        border = "black") 
+
+## zmienna loan amount 
+## statystki opisowe
+summary(dane$LoanAmount)
+## histogram
+hist(dane$LoanAmount,
+     main = "Histogram zmiennej LoanAmount",   
+     xlab = "Wartości",         
+     ylab = "Częstotliwość",     
+     col = "blue",               
+     border = "black") 
+## wykres pudelkowy
+boxplot(dane$LoanAmount, 
+        main = "Wykres pudełkowy dla zmiennej LoanAmount",  
+        ylab = "Wartości",          
+        col = "yellow",          
+        border = "black") 
+
+## zmienna TotalIncome 
+summary(dane$TotalIncome)
+## histogram
+hist(dane$TotalIncome,
+     main = "Histogram zmiennej TotalIncome",   
+     xlab = "Wartości",         
+     ylab = "Częstotliwość",     
+     col = "blue",               
+     border = "black") 
+## wykres pudelkowy
+boxplot(dane$TotalIncome, 
+        main = "Wykres pudełkowy dla zmiennej TotalIncome",  
+        ylab = "Wartości",          
+        col = "yellow",          
+        border = "black") 
+## zmienna debt to income ratio 
+summary(dane$DebtToIncomeRatio)
+## histogram
+hist(dane$DebtToIncomeRatio,
+     main = "Histogram zmiennej DebtToIncomeRatio",   
+     xlab = "Wartości",         
+     ylab = "Częstotliwość",     
+     col = "blue",               
+     border = "black") 
+## wykres pudelkowy
+boxplot(dane$DebtToIncomeRatio, 
+        main = "Wykres pudełkowy dla zmiennej DebtToIncomeRatio",  
+        ylab = "Wartości",          
+        col = "yellow",          
+        border = "black") 
+
+#zmienna gender
+freq <- table(dane$Gender)
+barplot(freq,
+        main = "Wykres słupkowy zmiennej Gender ", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black") 
+
+#zmienna Married 
+freq1<- table(dane$Married)
+barplot(freq1,
+        main = "Wykres słupkowy zmiennej Married", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black") 
+
+#zmienna dependents 
+freq2<- table(dane$Dependents)
+barplot(freq2,
+        main = "Wykres słupkowy zmiennej Dependents", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black") 
+
+#zmienna education
+freq3<- table(dane$Education)
+barplot(freq3,
+        main = "Wykres słupkowy zmiennej Education", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black") 
+
+#zmienna self employed
+freq4<- table(dane$Self_Employed)
+barplot(freq4,
+        main = "Wykres słupkowy zmiennej Self Employed", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black") 
+
+#zmienna credit history
+freq5<- table(dane$Credit_History)
+barplot(freq5,
+        main = "Wykres słupkowy zmiennej Credit History", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black") 
+
+#zmienna property area
+freq6 <- table(dane$Property_Area)
+barplot(freq6,
+        main = "Wykres słupkowy zmiennej property area", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black")
+
+#zmienna loan status 
+freq7 <- table(dane$Loan_Status)
+barplot(freq7,
+        main = "Wykres słupkowy zmiennej loan status", 
+        xlab = "Kategorie", 
+        ylab = "Częstotliwość", 
+        col = "green", 
+        border = "black")
+```
+
+## 2. Dwuwymiarowa analiza danych
+### Autor: Dominika Szymczak
+
+``` {r}
+
+```
+
+## 3. Budowanie i testowanie hipotez
+### AUtor: Julia Sowińska
+
+``` {r}
+
+```
+
+## 4. Segmentacja klientów i opis segmentow
+### Autor:
+
+``` {r}
+
+```
+
+## 5. Model predykcyjny 
+### Autor:
+
+``` {r}
+
+```
+
+## 6. Końcowe podsumowanie (i całkowity przegląd raportu)
+### Autor:
+
+``` {r}
+
+```
