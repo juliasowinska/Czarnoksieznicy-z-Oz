@@ -377,7 +377,6 @@ Ze względu na dużą skośność w rozkładach zmiennych ApplicantIncome, Coapp
 
 ### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne) i sprawdzenie ich rozkładów oraz statystyk opisowych
 ```{r}
-dane <- read.csv("Hipoteczny.csv", header = TRUE)
 View(dane)
 dane$TotalIncome <- dane$ApplicantIncome + dane$CoapplicantIncome ## stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego się o kredyt
 head(dane)
