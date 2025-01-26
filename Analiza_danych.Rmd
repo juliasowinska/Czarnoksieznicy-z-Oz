@@ -409,8 +409,6 @@ ggplot(dane, aes(x = Loan_Status, y = ApplicantIncome)) +
        y = "Applicant Income") +
   theme_minimal()
 
-Wykres1 <- scatter_plot(dane$Loan_Status, dane$ApplicantIncome, "Wykres rozrzutu Loan Status vs Applicant Income")
-
 ```
 
 - Loan Status vs Loan Amount
@@ -442,8 +440,6 @@ ggplot(dane, aes(x = Loan_Status, y = LoanAmount)) +
        y = "Loan Amount") +
   theme_minimal()
 
-Wykres2 <- scatter_plot(dane$Loan_Status, dane$LoanAmount, "Wykres rozrzutu Loan Status vs Loan Amount")
-
 ```
 
 - Loan Status vs Total Income
@@ -474,8 +470,6 @@ ggplot(dane, aes(x = Loan_Status, y = TotalIncome)) +
        x = "Loan Status",
        y = "Total Income") +
   theme_minimal()
-
-Wykres3 <- scatter_plot(dane$Loan_Status, dane$TotalIncome, "Wykres rozrzutu Loan Status vs Total Income")
 
 ```
 
