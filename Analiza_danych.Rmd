@@ -192,9 +192,300 @@ barplot(freq7,
 ## 2. Dwuwymiarowa analiza danych
 ### Autor: Dominika Szymczak
 
+
+#### Dwuwymiarowa analiza danych jakościowych:
+
+- Loan Status vs Gender
 ``` {r}
+# Tworzenie tabeli krzyżowej między Loan_Status i Gender
+LoanStatus_vs_Gender <- table(dane$Loan_Status, dane$Gender)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_Gender)
+
+# Test chi-kwadrat
+# Test zależności między zmiennymi
+chi_kwadrat <- chisq.test(LoanStatus_vs_Gender)
+print("Wynik testu chi-kwadrat:")
+print(chi_kwadrat)
+
+# Współczynnik Craméra
+# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
+n <- sum(LoanStatus_vs_Gender) # Łączna liczba obserwacji
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Gender)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print("Współczynnik Craméra:")
+print(phi_cramer)
+
+# Tworzenie wykresu mozaikowego
+mosaic(LoanStatus_vs_Gender, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Gender")
 
 ```
+
+- Loan Status vs Married
+``` {r}
+# Tworzenie tabeli krzyżowej między Loan_Status i Married
+LoanStatus_vs_Married <- table(dane$Loan_Status, dane$Married)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_Married)
+
+# Test chi-kwadrat
+# Test zależności między zmiennymi
+chi_kwadrat <- chisq.test(LoanStatus_vs_Married)
+print("Wynik testu chi-kwadrat:")
+print(chi_kwadrat)
+
+# Współczynnik Craméra
+# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
+n <- sum(LoanStatus_vs_Married) # Łączna liczba obserwacji
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Married)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print("Współczynnik Craméra:")
+print(phi_cramer)
+
+# Tworzenie wykresu mozaikowego
+mosaic(LoanStatus_vs_Married, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Married")
+
+```
+
+- Loan Status vs Dependents
+``` {r}
+# Tworzenie tabeli krzyżowej między Loan_Status i Dependents
+LoanStatus_vs_Dependents <- table(dane$Loan_Status, dane$Dependents)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_Dependents)
+
+# Test chi-kwadrat
+# Test zależności między zmiennymi
+chi_kwadrat <- chisq.test(LoanStatus_vs_Dependents)
+print("Wynik testu chi-kwadrat:")
+print(chi_kwadrat)
+
+# Współczynnik Craméra
+# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
+n <- sum(LoanStatus_vs_Dependents) # Łączna liczba obserwacji
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Dependents)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print("Współczynnik Craméra:")
+print(phi_cramer)
+
+# Tworzenie wykresu mozaikowego
+mosaic(LoanStatus_vs_Dependents, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Dependents")
+
+```
+
+- Loan Status vs Education
+``` {r}
+# Tworzenie tabeli krzyżowej między Loan_Status i Education
+LoanStatus_vs_Education <- table(dane$Loan_Status, dane$Education)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_Education)
+
+# Test chi-kwadrat
+# Test zależności między zmiennymi
+chi_kwadrat <- chisq.test(LoanStatus_vs_Education)
+print("Wynik testu chi-kwadrat:")
+print(chi_kwadrat)
+
+# Współczynnik Craméra
+# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
+n <- sum(LoanStatus_vs_Education) # Łączna liczba obserwacji
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Education)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print("Współczynnik Craméra:")
+print(phi_cramer)
+
+# Tworzenie wykresu mozaikowego
+mosaic(LoanStatus_vs_Education, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Education")
+
+```
+
+- Loan Status vs Self_Employed
+``` {r}
+# Tworzenie tabeli krzyżowej między Loan_Status i Self_Employed
+LoanStatus_vs_SelfEmployed <- table(dane$Loan_Status, dane$Self_Employed)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_SelfEmployed)
+
+# Test chi-kwadrat
+# Test zależności między zmiennymi
+chi_kwadrat <- chisq.test(LoanStatus_vs_SelfEmployed)
+print("Wynik testu chi-kwadrat:")
+print(chi_kwadrat)
+
+# Współczynnik Craméra
+# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
+n <- sum(LoanStatus_vs_SelfEmployed) # Łączna liczba obserwacji
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_SelfEmployed)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print("Współczynnik Craméra:")
+print(phi_cramer)
+
+# Tworzenie wykresu mozaikowego
+mosaic(LoanStatus_vs_SelfEmployed, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Self_Employed")
+
+```
+
+- Loan Status vs Credit History
+``` {r}
+# Tworzenie tabeli krzyżowej między Loan_Status i Credit_History
+LoanStatus_vs_CreditHistory <- table(dane$Loan_Status, dane$Credit_History)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_CreditHistory)
+
+# Test chi-kwadrat
+# Test zależności między zmiennymi
+chi_kwadrat <- chisq.test(LoanStatus_vs_CreditHistory)
+print("Wynik testu chi-kwadrat:")
+print(chi_kwadrat)
+
+# Współczynnik Craméra
+# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
+n <- sum(LoanStatus_vs_CreditHistory) # Łączna liczba obserwacji
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_CreditHistory)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print("Współczynnik Craméra:")
+print(phi_cramer)
+
+# Tworzenie wykresu mozaikowego
+mosaic(LoanStatus_vs_CreditHistory, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Credit_History")
+
+```
+
+- Loan Status vs Property Area
+``` {r}
+# Tworzenie tabeli krzyżowej między Loan_Status i Property_Area
+LoanStatus_vs_PropertyArea <- table(dane$Loan_Status, dane$Property_Area)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_PropertyArea)
+
+# Test chi-kwadrat
+# Test zależności między zmiennymi
+chi_kwadrat <- chisq.test(LoanStatus_vs_PropertyArea)
+print("Wynik testu chi-kwadrat:")
+print(chi_kwadrat)
+
+# Współczynnik Craméra
+# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
+n <- sum(LoanStatus_vs_PropertyArea) # Łączna liczba obserwacji
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_PropertyArea)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print("Współczynnik Craméra:")
+print(phi_cramer)
+
+# Tworzenie wykresu mozaikowego
+mosaic(LoanStatus_vs_PropertyArea, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Property_Area")
+
+```
+
+
+#### Dwuwymiarowa analiza danych mieszanych (jakościowej z ilościową)
+
+- Loan Status vs Applicant Income
+```{r}
+# Wykres ramka-wąsy (boxplot)
+boxplot(dane$ApplicantIncome ~ dane$Loan_Status,
+        main = "Rozkład dochodów według statusu pożyczki",
+        xlab = "Loan Status",
+        ylab = "Applicant Income",
+        col = c("lightblue", "lightgreen"),
+        notch = TRUE)
+
+# Jednokierunkowa ANOVA - istotność
+anova_result1 <- aov(ApplicantIncome ~ Loan_Status, data = dane)
+summary(anova_result1)
+
+# Zamiana Loan_Status na wartości numeryczne
+dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
+# Obliczenie współczynnika korelacji Pearsona
+pearson_corr1 <- cor(dane$Loan_Status_numeric, dane$ApplicantIncome, use = "complete.obs")
+print(paste("Współczynnik korelacji Pearsona:", pearson_corr1))
+
+# Wykres punktowy
+ggplot(dane, aes(x = Loan_Status, y = ApplicantIncome)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  labs(title = "Dochody w podziale na Loan_Status",
+       x = "Loan Status",
+       y = "Applicant Income") +
+  theme_minimal()
+
+Wykres1 <- scatter_plot(dane$Loan_Status, dane$ApplicantIncome, "Wykres rozrzutu Loan Status vs Applicant Income")
+
+```
+
+- Loan Status vs Loan Amount
+```{r}
+# Wykres ramka-wąsy (boxplot)
+boxplot(dane$LoanAmount ~ dane$Loan_Status,
+        main = "Rozkład wielkości pożyczki według statusu pożyczki",
+        xlab = "Loan Status",
+        ylab = "Loan Amount",
+        col = c("lightblue", "lightgreen"),
+        notch = TRUE)
+
+# Jednokierunkowa ANOVA - istotność
+anova_result2 <- aov(LoanAmount ~ Loan_Status, data = dane)
+summary(anova_result2)
+
+# Zamiana Loan_Status na wartości numeryczne
+dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
+# Obliczenie współczynnika korelacji Pearsona
+pearson_corr2 <- cor(dane$Loan_Status_numeric, dane$LoanAmount, use = "complete.obs")
+print(paste("Współczynnik korelacji Pearsona:", pearson_corr2))
+
+# Wykres punktowy
+ggplot(dane, aes(x = Loan_Status, y = LoanAmount)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  labs(title = "Dochody w podziale na Loan_Status",
+       x = "Loan Status",
+       y = "Loan Amount") +
+  theme_minimal()
+
+Wykres2 <- scatter_plot(dane$Loan_Status, dane$LoanAmount, "Wykres rozrzutu Loan Status vs Loan Amount")
+
+```
+
+- Loan Status vs Total Income
+```{r}
+# Wykres ramka-wąsy (boxplot)
+boxplot(dane$TotalIncome ~ dane$Loan_Status,
+        main = "Rozkład wielkości pożyczki według statusu pożyczki",
+        xlab = "Loan Status",
+        ylab = "Tota lIncome",
+        col = c("lightblue", "lightgreen"),
+        notch = TRUE)
+
+# Jednokierunkowa ANOVA - istotność
+anova_result3 <- aov(TotalIncome ~ Loan_Status, data = dane)
+summary(anova_result3)
+
+# Zamiana Loan_Status na wartości numeryczne
+dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
+# Obliczenie współczynnika korelacji Pearsona
+pearson_corr3 <- cor(dane$Loan_Status_numeric, dane$TotalIncome, use = "complete.obs")
+print(paste("Współczynnik korelacji Pearsona:", pearson_corr3))
+
+# Wykres punktowy
+ggplot(dane, aes(x = Loan_Status, y = TotalIncome)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  labs(title = "Dochody w podziale na Loan_Status",
+       x = "Loan Status",
+       y = "Total Income") +
+  theme_minimal()
+
+Wykres3 <- scatter_plot(dane$Loan_Status, dane$TotalIncome, "Wykres rozrzutu Loan Status vs Total Income")
+
+```
+
+```{r}
+grid.arrange(Wykres1, Wykres2, Wykres3, nrow = 3)
+
+```
+
+
+
 
 ## 3. Budowanie i testowanie hipotez
 ### AUtor: Julia Sowińska
