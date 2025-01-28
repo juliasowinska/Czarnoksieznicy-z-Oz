@@ -198,26 +198,13 @@ barplot(freq7,
 - Loan Status vs Gender
 ``` {r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Gender
+library(mosaic)
 LoanStatus_vs_Gender <- table(dane$Loan_Status, dane$Gender)
 print("Tabela krzyżowa:")
 print(LoanStatus_vs_Gender)
 
-# Test chi-kwadrat
-# Test zależności między zmiennymi
-chi_kwadrat <- chisq.test(LoanStatus_vs_Gender)
-print("Wynik testu chi-kwadrat:")
-print(chi_kwadrat)
-
-# Współczynnik Craméra
-# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
-n <- sum(LoanStatus_vs_Gender) # Łączna liczba obserwacji
-phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Gender)) - 1)))
-names(phi_cramer) <- "Cramer's V"
-print("Współczynnik Craméra:")
-print(phi_cramer)
-
 # Tworzenie wykresu mozaikowego
-mosaic(LoanStatus_vs_Gender, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Gender")
+mosaicplot(LoanStatus_vs_Gender, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Gender")
 
 ```
 
@@ -228,22 +215,8 @@ LoanStatus_vs_Married <- table(dane$Loan_Status, dane$Married)
 print("Tabela krzyżowa:")
 print(LoanStatus_vs_Married)
 
-# Test chi-kwadrat
-# Test zależności między zmiennymi
-chi_kwadrat <- chisq.test(LoanStatus_vs_Married)
-print("Wynik testu chi-kwadrat:")
-print(chi_kwadrat)
-
-# Współczynnik Craméra
-# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
-n <- sum(LoanStatus_vs_Married) # Łączna liczba obserwacji
-phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Married)) - 1)))
-names(phi_cramer) <- "Cramer's V"
-print("Współczynnik Craméra:")
-print(phi_cramer)
-
 # Tworzenie wykresu mozaikowego
-mosaic(LoanStatus_vs_Married, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Married")
+mosaicplot(LoanStatus_vs_Married, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Married")
 
 ```
 
@@ -254,22 +227,8 @@ LoanStatus_vs_Dependents <- table(dane$Loan_Status, dane$Dependents)
 print("Tabela krzyżowa:")
 print(LoanStatus_vs_Dependents)
 
-# Test chi-kwadrat
-# Test zależności między zmiennymi
-chi_kwadrat <- chisq.test(LoanStatus_vs_Dependents)
-print("Wynik testu chi-kwadrat:")
-print(chi_kwadrat)
-
-# Współczynnik Craméra
-# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
-n <- sum(LoanStatus_vs_Dependents) # Łączna liczba obserwacji
-phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Dependents)) - 1)))
-names(phi_cramer) <- "Cramer's V"
-print("Współczynnik Craméra:")
-print(phi_cramer)
-
 # Tworzenie wykresu mozaikowego
-mosaic(LoanStatus_vs_Dependents, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Dependents")
+mosaicplot(LoanStatus_vs_Dependents, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Dependents")
 
 ```
 
@@ -280,22 +239,8 @@ LoanStatus_vs_Education <- table(dane$Loan_Status, dane$Education)
 print("Tabela krzyżowa:")
 print(LoanStatus_vs_Education)
 
-# Test chi-kwadrat
-# Test zależności między zmiennymi
-chi_kwadrat <- chisq.test(LoanStatus_vs_Education)
-print("Wynik testu chi-kwadrat:")
-print(chi_kwadrat)
-
-# Współczynnik Craméra
-# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
-n <- sum(LoanStatus_vs_Education) # Łączna liczba obserwacji
-phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_Education)) - 1)))
-names(phi_cramer) <- "Cramer's V"
-print("Współczynnik Craméra:")
-print(phi_cramer)
-
 # Tworzenie wykresu mozaikowego
-mosaic(LoanStatus_vs_Education, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Education")
+mosaicplot(LoanStatus_vs_Education, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Education")
 
 ```
 
@@ -306,22 +251,8 @@ LoanStatus_vs_SelfEmployed <- table(dane$Loan_Status, dane$Self_Employed)
 print("Tabela krzyżowa:")
 print(LoanStatus_vs_SelfEmployed)
 
-# Test chi-kwadrat
-# Test zależności między zmiennymi
-chi_kwadrat <- chisq.test(LoanStatus_vs_SelfEmployed)
-print("Wynik testu chi-kwadrat:")
-print(chi_kwadrat)
-
-# Współczynnik Craméra
-# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
-n <- sum(LoanStatus_vs_SelfEmployed) # Łączna liczba obserwacji
-phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_SelfEmployed)) - 1)))
-names(phi_cramer) <- "Cramer's V"
-print("Współczynnik Craméra:")
-print(phi_cramer)
-
 # Tworzenie wykresu mozaikowego
-mosaic(LoanStatus_vs_SelfEmployed, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Self_Employed")
+mosaicplot(LoanStatus_vs_SelfEmployed, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Self_Employed")
 
 ```
 
@@ -332,22 +263,16 @@ LoanStatus_vs_CreditHistory <- table(dane$Loan_Status, dane$Credit_History)
 print("Tabela krzyżowa:")
 print(LoanStatus_vs_CreditHistory)
 
-# Test chi-kwadrat
-# Test zależności między zmiennymi
-chi_kwadrat <- chisq.test(LoanStatus_vs_CreditHistory)
-print("Wynik testu chi-kwadrat:")
-print(chi_kwadrat)
-
-# Współczynnik Craméra
-# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
-n <- sum(LoanStatus_vs_CreditHistory) # Łączna liczba obserwacji
-phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_CreditHistory)) - 1)))
-names(phi_cramer) <- "Cramer's V"
-print("Współczynnik Craméra:")
-print(phi_cramer)
-
 # Tworzenie wykresu mozaikowego
-mosaic(LoanStatus_vs_CreditHistory, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Credit_History")
+mosaicplot(LoanStatus_vs_CreditHistory, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Credit_History")
+
+
+# Ej Dominika - zobacz ten wykres
+library(ggplot2)
+contingency_table <- table(dane$Loan_Status, dane$Credit_History)
+ggplot(as.data.frame(contingency_table), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal()
 
 ```
 
@@ -358,23 +283,8 @@ LoanStatus_vs_PropertyArea <- table(dane$Loan_Status, dane$Property_Area)
 print("Tabela krzyżowa:")
 print(LoanStatus_vs_PropertyArea)
 
-# Test chi-kwadrat
-# Test zależności między zmiennymi
-chi_kwadrat <- chisq.test(LoanStatus_vs_PropertyArea)
-print("Wynik testu chi-kwadrat:")
-print(chi_kwadrat)
-
-# Współczynnik Craméra
-# Obliczenie współczynnika Craméra (na podstawie statystyki chi-kwadrat), wskazuje siłę związku między zmiennymi (od 0 do 1).
-n <- sum(LoanStatus_vs_PropertyArea) # Łączna liczba obserwacji
-phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_PropertyArea)) - 1)))
-names(phi_cramer) <- "Cramer's V"
-print("Współczynnik Craméra:")
-print(phi_cramer)
-
 # Tworzenie wykresu mozaikowego
-mosaic(LoanStatus_vs_PropertyArea, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Property_Area")
-
+mosaicplot(LoanStatus_vs_PropertyArea, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Property_Area")
 ```
 
 
@@ -383,25 +293,21 @@ mosaic(LoanStatus_vs_PropertyArea, shade = TRUE, legend = TRUE, main = "Wykres M
 - Loan Status vs Applicant Income
 ```{r}
 # Wykres ramka-wąsy (boxplot)
-boxplot(dane$ApplicantIncome ~ dane$Loan_Status,
+boxplot(dane$log_ApplicantIncome ~ dane$Loan_Status,
         main = "Rozkład dochodów według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Applicant Income",
         col = c("lightblue", "lightgreen"),
         notch = TRUE)
 
-# Jednokierunkowa ANOVA - istotność
-anova_result1 <- aov(ApplicantIncome ~ Loan_Status, data = dane)
-summary(anova_result1)
-
 # Zamiana Loan_Status na wartości numeryczne
 dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
 # Obliczenie współczynnika korelacji Pearsona
-pearson_corr1 <- cor(dane$Loan_Status_numeric, dane$ApplicantIncome, use = "complete.obs")
+pearson_corr1 <- cor(dane$Loan_Status_numeric, dane$log_ApplicantIncome, use = "complete.obs")
 print(paste("Współczynnik korelacji Pearsona:", pearson_corr1))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = ApplicantIncome)) +
+ggplot(dane, aes(x = Loan_Status, y = log_ApplicantIncome)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
   labs(title = "Dochody w podziale na Loan_Status",
@@ -414,25 +320,19 @@ ggplot(dane, aes(x = Loan_Status, y = ApplicantIncome)) +
 - Loan Status vs Loan Amount
 ```{r}
 # Wykres ramka-wąsy (boxplot)
-boxplot(dane$LoanAmount ~ dane$Loan_Status,
+boxplot(dane$log_LoanAmount ~ dane$Loan_Status,
         main = "Rozkład wielkości pożyczki według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Loan Amount",
         col = c("lightblue", "lightgreen"),
         notch = TRUE)
 
-# Jednokierunkowa ANOVA - istotność
-anova_result2 <- aov(LoanAmount ~ Loan_Status, data = dane)
-summary(anova_result2)
-
-# Zamiana Loan_Status na wartości numeryczne
-dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
 # Obliczenie współczynnika korelacji Pearsona
-pearson_corr2 <- cor(dane$Loan_Status_numeric, dane$LoanAmount, use = "complete.obs")
+pearson_corr2 <- cor(dane$Loan_Status_numeric, dane$log_LoanAmount, use = "complete.obs")
 print(paste("Współczynnik korelacji Pearsona:", pearson_corr2))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = LoanAmount)) +
+ggplot(dane, aes(x = Loan_Status, y = log_LoanAmount)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
   labs(title = "Dochody w podziale na Loan_Status",
@@ -445,7 +345,7 @@ ggplot(dane, aes(x = Loan_Status, y = LoanAmount)) +
 - Loan Status vs Total Income
 ```{r}
 # Wykres ramka-wąsy (boxplot)
-boxplot(dane$TotalIncome ~ dane$Loan_Status,
+boxplot(dane$log_TotalIncome ~ dane$Loan_Status,
         main = "Rozkład wielkości pożyczki według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Tota lIncome",
@@ -453,17 +353,15 @@ boxplot(dane$TotalIncome ~ dane$Loan_Status,
         notch = TRUE)
 
 # Jednokierunkowa ANOVA - istotność
-anova_result3 <- aov(TotalIncome ~ Loan_Status, data = dane)
+anova_result3 <- aov(log_TotalIncome ~ Loan_Status, data = dane)
 summary(anova_result3)
 
-# Zamiana Loan_Status na wartości numeryczne
-dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
 # Obliczenie współczynnika korelacji Pearsona
-pearson_corr3 <- cor(dane$Loan_Status_numeric, dane$TotalIncome, use = "complete.obs")
+pearson_corr3 <- cor(dane$Loan_Status_numeric, dane$log_TotalIncome, use = "complete.obs")
 print(paste("Współczynnik korelacji Pearsona:", pearson_corr3))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = TotalIncome)) +
+ggplot(dane, aes(x = Loan_Status, y = log_TotalIncome)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
   labs(title = "Dochody w podziale na Loan_Status",
@@ -472,37 +370,280 @@ ggplot(dane, aes(x = Loan_Status, y = TotalIncome)) +
   theme_minimal()
 
 ```
-
+- Loan Status vs DebtToIncomeRatio
 ```{r}
-grid.arrange(Wykres1, Wykres2, Wykres3, nrow = 3)
+# Wykres ramka-wąsy (boxplot)
+boxplot(dane$log_DebtToIncomeRatio ~ dane$Loan_Status,
+        main = "Rozkład współczynnika długu do przychodów według statusu pożyczki",
+        xlab = "Loan Status",
+        ylab = "Debt To Income Ratio",
+        col = c("lightblue", "lightgreen"),
+        notch = TRUE)
+
+# Obliczenie współczynnika korelacji Pearsona
+pearson_corr3 <- cor(dane$Loan_Status_numeric, dane$log_DebtToIncomeRatio, use = "complete.obs")
+print(paste("Współczynnik korelacji Pearsona:", pearson_corr3))
+
+# Wykres punktowy
+ggplot(dane, aes(x = Loan_Status, y = log_DebtToIncomeRatio)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  labs(title = "Współczynnik długu do przychodów w podziale na Loan_Status",
+       x = "Loan Status",
+       y = "Debt To Income Ratio") +
+  theme_minimal()
 
 ```
-
-
-
 
 ## 3. Budowanie i testowanie hipotez
 ### AUtor: Julia Sowińska
 
+Dla wszystkich postawionych hipotez, przyjmuje się poziom istotności alpha w wysokości 0,05 (5%).
+
+### Hipotezy:
+#### A. Loan_Status i Credit_History
+H₀: Prawdopodobieństwo przyznania kredytu (Loan_Status) jest niezależne od posiadania historii kredytowej (Credit_History).
+H₁: Prawdopodobieństwo przyznania kredytu różni się w zależności od posiadania historii kredytowej.
+
+```{r}
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_CreditHistory)
+```
+
+Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), jest spełnione, dlatego zostanie wykorzystany test Chi-kwadrat.
+
+``` {r}
+# Test chi-kwadrat
+chi_kwadrat <- chisq.test(LoanStatus_vs_CreditHistory)
+print(chi_kwadrat)
+```
+
+P-value jest mniejsze niż przyjęty poziom istotności, co pozwala odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu zależności między zmiennymi Loan_Status i Credit_History.
+
+``` {r}
+# Współczynnik Craméra
+n <- sum(LoanStatus_vs_CreditHistory)
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_CreditHistory)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print(phi_cramer)
+```
+Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,428, co świadczy o umiarkowanym związku między zmiennymi Loan_Status i Credit_History.
+
+
+#### B. Loan_Status i Loan_Amount_Term
+H₀: Długość okresu spłaty kredytu (Loan_Amount_Term) nie wpływa na decyzję o przyznaniu kredytu.
+H₁: Długość okresu spłaty kredytu wpływa na decyzję o przyznaniu kredytu.
+
+```{r}
+LoanStatus_vs_Loan_Amount_Term <- table(dane$Loan_Status, dane$Loan_Amount_Term)
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_Loan_Amount_Term)
+```
+
+Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), nie jest spełnione, więc wykorzystany zostanie test Fishera.
+
+``` {r}
+fisher_test <- fisher.test(LoanStatus_vs_Loan_Amount_Term)
+print(fisher_test)
+```
+
+P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Loan_Status i Loan_Amount_Term.
+
+
+
+#### C. Loan_Status i Property_Area
+H₀: Obszar zamieszkania kredytobiorcy (Property_Area) nie wpływa na decyzję o przyznaniu kredytu.
+H₁: Obszar zamieszkania kredytobiorcy wpływa na decyzję o przyznaniu kredytu.
+
+```{r}
+print("Tabela krzyżowa:")
+print(LoanStatus_vs_Property_Area)
+```
+
+Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), jest spełnione, dlatego zostanie wykorzystany test Chi-kwadrat.
+
+``` {r}
+# Test chi-kwadrat
+chi_kwadrat <- chisq.test(LoanStatus_vs_PropertyArea)
+print(chi_kwadrat)
+```
+
+P-value jest mniejsze niż przyjęty poziom istotności, co pozwala odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu zależności między zmiennymi Loan_Status i Property_Area.
+
+``` {r}
+# Współczynnik Craméra
+n <- sum(LoanStatus_vs_PropertyArea)
+phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_PropertyArea)) - 1)))
+names(phi_cramer) <- "Cramer's V"
+print(phi_cramer)
+```
+Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,142, co świadczy o słabym związku między zmiennymi Loan_Status i PropertyArea.
+
+
+#### D. Loan_Status i log_DebtToIncomeRatio
+H₀: Średni wskaźnik długu do dochodu (DebtToIncomeRatio) nie różni się między grupami, którym przyznano i nie przyznano kredytu.
+H₁: Średni wskaźnik długu do dochodu różni się między grupami, którym przyznano i nie przyznano kredytu.
+
+```{r}
+group_yes <- dane$log_DebtToIncomeRatio[dane$Loan_Status == "Yes"]
+group_no <- dane$log_DebtToIncomeRatio[dane$Loan_Status == "No"]
+
+# Test Shapiro-Wilka dla normalności
+shapiro_yes <- shapiro.test(group_yes)
+shapiro_no <- shapiro.test(group_no)
+
+cat("Group Yes: W =", shapiro_yes$statistic, ", p =", shapiro_yes$p.value, "\n")
+cat("Group No: W =", shapiro_no$statistic, ", p =", shapiro_no$p.value, "\n")
+
+# Test Bartletta dla jednorodności wariancji
+bartlett_test <- bartlett.test(DebtToIncomeRatio ~ Loan_Status, data = dane)
+print(bartlett_test)
+```
+
+Zarówno założenie o normalności rozkładu zmiennej log_DebtToIncomeRatio w każdej z grup Loan_Status (Yes/No), jak i założenie o jednorodności wariancji nie zostały spełnione, dlatego zamiast testu t-Studenta, stosowany będzie test U Manna-Whitneya.
+
+``` {r}
+mannwhitney <- wilcox.test(log_DebtToIncomeRatio ~ Loan_Status, data = dane)
+  print(mannwhitney)
+```
+
+P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Loan_Status i DebtToIncomeRatio.
+
+
+
+#### E. Loan_Status i log_TotalIncome
+H₀: Średni całkowity dochód (TotalIncome) nie różni się między grupami, którym przyznano i nie przyznano kredytu.
+H₁: Średni całkowity dochód różni się między grupami, którym przyznano i nie przyznano kredytu.
+
+```{r}
+group_yes <- dane$log_TotalIncome[dane$Loan_Status == "Yes"]
+group_no <- dane$log_TotalIncome[dane$Loan_Status == "No"]
+
+# Test Shapiro-Wilka dla normalności
+shapiro_yes <- shapiro.test(group_yes)
+shapiro_no <- shapiro.test(group_no)
+
+cat("Group Yes: W =", shapiro_yes$statistic, ", p =", shapiro_yes$p.value, "\n")
+cat("Group No: W =", shapiro_no$statistic, ", p =", shapiro_no$p.value, "\n")
+
+# Test Bartletta dla jednorodności wariancji
+bartlett_test <- bartlett.test(log_TotalIncome ~ Loan_Status, data = dane)
+print(bartlett_test)
+```
+
+Zarówno założenie o normalności rozkładu zmiennej log_DebtToIncomeRatio w każdej z grup Loan_Status (Yes/No), jak i założenie o jednorodności wariancji nie zostały spełnione, dlatego zamiast testu t-Studenta, stosowany będzie test U Manna-Whitneya.
+
+``` {r}
+mannwhitney <- wilcox.test(log_TotalIncome ~ Loan_Status, data = dane)
+  print(mannwhitney)
+```
+
+P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Loan_Status i TotalIncome
+
+
+
+#### F. Credit_History i Loan_Amount_Term
+H₀: Posiadanie historii kredytowej (Credit_History) nie jest powiązane z długością okresu spłaty kredytu (Loan_Amount_Term).
+H₁: Posiadanie historii kredytowej jest powiązane z długością okresu spłaty kredytu.
+
+```{r}
+Credit_History_vs_Loan_Amount_Term <- table(dane$Credit_History, dane$Loan_Amount_Term)
+print("Tabela krzyżowa:")
+print(Credit_History_vs_Loan_Amount_Term)
+```
+
+Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), nie jest spełnione, więc wykorzystany zostanie test Fishera.
+
+``` {r}
+fisher_test <- fisher.test(Credit_History_vs_Loan_Amount_Term)
+print(fisher_test)
+```
+
+P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Credit_History i Loan_Amount_Term.
+
+Zależność zmiennych Credit_History oraz Property_Area ze zmienną Loan_Status zostały uznane za istotne.
+
+## 4. Grupy klientów według kombinacji Credit_History i Property_Area
+### Autor: 
+
+### Dodanie nowej zmiennej grupującej klientów według Credit_History i Property_Area na 6 grup
+``` {r}
+dane$Group <- paste(dane$Property_Area, dane$Credit_History, sep = "_")
+dane$Group <- factor(dane$Group,
+                          levels = c("Urban_Existing", "Semiurban_Existing", "Rural_Existing", "Urban_Not existing", "Semiurban_Not existing", "Rural_Not existing"),
+                          labels = c("Urban_Existing", "Semiurban_Existing", "Rural_Existing", "Urban_Not existing", "Semiurban_Not existing", "Rural_Not existing"))
+```
+
+### Skrócone statystyki opisowe dla każdej grupy
 ``` {r}
 
 ```
 
-## 4. Segmentacja klientów i opis segmentow
+### Proporcje przyznanych kredytów w każdej grupie
+``` {r}
+
+```
+
+### Wizualizacja
+``` {r}
+
+```
+
+## 4. Model predykcyjny 
 ### Autor:
 
+### Podział danych na zbiór treningowy i testowy
 ``` {r}
-
+dane$Loan_Status_Binary <- ifelse(dane$Loan_Status == "Yes", 1, 0)
+set.seed(123)
+train_idx <- sample(1:nrow(dane), 0.7 * nrow(dane))
+train <- dane[train_idx, ]
+test <- dane[-train_idx, ]
 ```
 
-## 5. Model predykcyjny 
-### Autor:
+Dane zostały podzielona na dwa zbiory - treningowy i testowy, by uniknąć przeuczenia (overfittingu) oraz zapewnić rzetelną ocenę modelu poprzez testowanie modelu na danych, których nie widział podczas treningu. Zdecydowano się na podział: 70% danych do treningu i 30% danych do testu.
 
+### Budowa modelu
 ``` {r}
-
+model <- glm(Loan_Status_Binary ~ Credit_History + Property_Area, data = train, family = "binomial")
+summary(model)
 ```
 
-## 6. Końcowe podsumowanie (i całkowity przegląd raportu)
+Zbudowany został model regresji logistycznej (logit), który był naturalnym wyborem dla problemu klasyfikacji binarnej, jakim było przyznanie bądź nieprzyznanie kredytu. Model ten został wybrany ze względu na jego prostotę, szybkość i efektywność, a także ze względu na łatwiejszą interpretację. Jest to model predykcyjny, zatem zdecydowano się na pozostawienie w nim wszystkich zmiennych bez względu na istotność statystyczną. 
+
+### Ocena modelu
+``` {r}
+predictions <- predict(model, newdata = test, type = "response")
+predicted_classes <- ifelse(predictions > 0.5, "Yes", "No")
+confusion_matrix <- table(Predicted = predicted_classes, Actual = test$Loan_Status)
+print(confusion_matrix)
+
+confusion_matrix_df <- as.data.frame(confusion_matrix)
+ggplot(confusion_matrix_df, aes(Actual, Predicted, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Rzeczywista klasa", y = "Przewidywana klasa", fill = "Liczba")
+
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+cat("Dokładność:", accuracy, "\n")
+precision <- confusion_matrix["Yes", "Yes"] / (confusion_matrix["Yes", "Yes"] + confusion_matrix["No", "Yes"])
+cat("Precyzja:", precision, "\n")
+recall <- confusion_matrix["Yes", "Yes"] / (confusion_matrix["Yes", "Yes"] + confusion_matrix["Yes", "No"])
+cat("Czułość:", recall, "\n")
+```
+
+Model prawidłowo klasyfikuje około 75,68% przypadków. Około 88,46% przewidywań przyznania kredytu jest prawidłowe i około 79,31% rzeczywistych przyznań kredytu zostało poprawnie wykrytych.
+
+``` {r}
+library(pROC)
+roc_curve <- roc(test$Loan_Status, predictions)
+plot(roc_curve, col = "blue")
+auc(roc_curve)
+```
+
+AUC przyjmuje wartość 0,7614, co oznacza, że model jest przyzwoity. 
+
+## 5. Podsumowanie 
 ### Autor:
 
 ``` {r}
