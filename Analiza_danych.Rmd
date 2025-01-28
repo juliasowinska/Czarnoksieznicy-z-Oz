@@ -589,7 +589,7 @@ dane$Group <- factor(dane$Group,
 
 ```
 
-## 4. Model predykcyjny 
+## 5. Model predykcyjny 
 ### Autor:
 
 ### Podział danych na zbiór treningowy i testowy
@@ -643,7 +643,7 @@ auc(roc_curve)
 
 AUC przyjmuje wartość 0,7614, co oznacza, że model jest przyzwoity. 
 
-## 5. Podsumowanie 
+## 6. Podsumowanie 
 ### Autor:
 
 ``` {r}
