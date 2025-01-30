@@ -197,14 +197,23 @@ barplot(freq7,
 
 - Loan Status vs Gender
 ``` {r}
-# Tworzenie tabeli krzyżowej między Loan_Status i Gender
 library(mosaic)
+library(knitr)
+library(ggplot2)
+
+# Tworzenie tabeli krzyżowej między Loan_Status i Gender
 LoanStatus_vs_Gender <- table(dane$Loan_Status, dane$Gender)
-print("Tabela krzyżowa:")
-print(LoanStatus_vs_Gender)
+kable(LoanStatus_vs_Gender, caption = "Tabela krzyżowa: Loan Status vs Gender")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_Gender, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Gender")
+LoanStatus_vs_PropertyArea <- table(dane$Loan_Status, dane$Property_Area)
+
+# Tworzenie wykresu ilościowego
+ggplot(as.data.frame(LoanStatus_vs_Gender), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Loan Status", y = "Gender")
 
 ```
 
@@ -212,11 +221,16 @@ mosaicplot(LoanStatus_vs_Gender, shade = TRUE, legend = TRUE, main = "Wykres Moz
 ``` {r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Married
 LoanStatus_vs_Married <- table(dane$Loan_Status, dane$Married)
-print("Tabela krzyżowa:")
-print(LoanStatus_vs_Married)
+kable(LoanStatus_vs_Married, caption = "Tabela krzyżowa: Loan Status vs Married")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_Married, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Married")
+
+# Tworzenie wykresu ilościowego
+ggplot(as.data.frame(LoanStatus_vs_Married), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Loan Status", y = "Married")
 
 ```
 
@@ -224,11 +238,16 @@ mosaicplot(LoanStatus_vs_Married, shade = TRUE, legend = TRUE, main = "Wykres Mo
 ``` {r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Dependents
 LoanStatus_vs_Dependents <- table(dane$Loan_Status, dane$Dependents)
-print("Tabela krzyżowa:")
-print(LoanStatus_vs_Dependents)
+kable(LoanStatus_vs_Dependents, caption = "Tabela krzyżowa: Loan Status vs Dependents")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_Dependents, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Dependents")
+
+# Tworzenie wykresu ilościowego
+ggplot(as.data.frame(LoanStatus_vs_Dependents), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Loan Status", y = "Dependents")
 
 ```
 
@@ -236,11 +255,16 @@ mosaicplot(LoanStatus_vs_Dependents, shade = TRUE, legend = TRUE, main = "Wykres
 ``` {r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Education
 LoanStatus_vs_Education <- table(dane$Loan_Status, dane$Education)
-print("Tabela krzyżowa:")
-print(LoanStatus_vs_Education)
+kable(LoanStatus_vs_Education, caption = "Tabela krzyżowa: Loan Status vs Education")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_Education, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Education")
+
+# Tworzenie wykresu ilościowego
+ggplot(as.data.frame(LoanStatus_vs_Education), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Loan Status", y = "Education")
 
 ```
 
@@ -248,11 +272,16 @@ mosaicplot(LoanStatus_vs_Education, shade = TRUE, legend = TRUE, main = "Wykres 
 ``` {r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Self_Employed
 LoanStatus_vs_SelfEmployed <- table(dane$Loan_Status, dane$Self_Employed)
-print("Tabela krzyżowa:")
-print(LoanStatus_vs_SelfEmployed)
+kable(LoanStatus_vs_SelfEmployed, caption = "Tabela krzyżowa: Loan Status vs Self Employed")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_SelfEmployed, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Self_Employed")
+
+# Tworzenie wykresu ilościowego
+ggplot(as.data.frame(LoanStatus_vs_SelfEmployed), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Loan Status", y = "Self Employed")
 
 ```
 
@@ -260,19 +289,16 @@ mosaicplot(LoanStatus_vs_SelfEmployed, shade = TRUE, legend = TRUE, main = "Wykr
 ``` {r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Credit_History
 LoanStatus_vs_CreditHistory <- table(dane$Loan_Status, dane$Credit_History)
-print("Tabela krzyżowa:")
-print(LoanStatus_vs_CreditHistory)
+kable(LoanStatus_vs_CreditHistory, caption = "Tabela krzyżowa: Loan Status vs Credit History")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_CreditHistory, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Credit_History")
 
-
 # Ej Dominika - zobacz ten wykres
-library(ggplot2)
-contingency_table <- table(dane$Loan_Status, dane$Credit_History)
-ggplot(as.data.frame(contingency_table), aes(Var1, Var2, fill = Freq)) +
+ggplot(as.data.frame(LoanStatus_vs_CreditHistory), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
-  theme_minimal()
+  theme_minimal() +
+  labs(x = "Loan Status", y = "Credit History")
 
 ```
 
@@ -280,11 +306,17 @@ ggplot(as.data.frame(contingency_table), aes(Var1, Var2, fill = Freq)) +
 ``` {r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Property_Area
 LoanStatus_vs_PropertyArea <- table(dane$Loan_Status, dane$Property_Area)
-print("Tabela krzyżowa:")
-print(LoanStatus_vs_PropertyArea)
+kable(LoanStatus_vs_PropertyArea, caption = "Tabela krzyżowa: Loan Status vs Property Area")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_PropertyArea, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Property_Area")
+
+# Tworzenie wykresu ilościowego
+ggplot(as.data.frame(LoanStatus_vs_PropertyArea), aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  theme_minimal() +
+  labs(x = "Loan Status", y = "Property Area")
+
 ```
 
 
@@ -294,7 +326,7 @@ mosaicplot(LoanStatus_vs_PropertyArea, shade = TRUE, legend = TRUE, main = "Wykr
 ```{r}
 # Wykres ramka-wąsy (boxplot)
 boxplot(dane$log_ApplicantIncome ~ dane$Loan_Status,
-        main = "Rozkład dochodów według statusu pożyczki",
+        main = "Rozkład dochodów aplikanta według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Applicant Income",
         col = c("lightblue", "lightgreen"),
@@ -310,7 +342,7 @@ print(paste("Współczynnik korelacji Pearsona:", pearson_corr1))
 ggplot(dane, aes(x = Loan_Status, y = log_ApplicantIncome)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
-  labs(title = "Dochody w podziale na Loan_Status",
+  labs(title = "Dochody aplikanta w podziale na status kredytu",
        x = "Loan Status",
        y = "Applicant Income") +
   theme_minimal()
@@ -335,7 +367,7 @@ print(paste("Współczynnik korelacji Pearsona:", pearson_corr2))
 ggplot(dane, aes(x = Loan_Status, y = log_LoanAmount)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
-  labs(title = "Dochody w podziale na Loan_Status",
+  labs(title = "Kwota kredytu w podziale na status kredytu",
        x = "Loan Status",
        y = "Loan Amount") +
   theme_minimal()
@@ -346,7 +378,7 @@ ggplot(dane, aes(x = Loan_Status, y = log_LoanAmount)) +
 ```{r}
 # Wykres ramka-wąsy (boxplot)
 boxplot(dane$log_TotalIncome ~ dane$Loan_Status,
-        main = "Rozkład wielkości pożyczki według statusu pożyczki",
+        main = "Rozkład całkowitego dochodu według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Tota lIncome",
         col = c("lightblue", "lightgreen"),
@@ -364,12 +396,13 @@ print(paste("Współczynnik korelacji Pearsona:", pearson_corr3))
 ggplot(dane, aes(x = Loan_Status, y = log_TotalIncome)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
-  labs(title = "Dochody w podziale na Loan_Status",
+  labs(title = "Całkowite dochody w podziale na status kredytu",
        x = "Loan Status",
        y = "Total Income") +
   theme_minimal()
 
 ```
+
 - Loan Status vs DebtToIncomeRatio
 ```{r}
 # Wykres ramka-wąsy (boxplot)
@@ -388,9 +421,36 @@ print(paste("Współczynnik korelacji Pearsona:", pearson_corr3))
 ggplot(dane, aes(x = Loan_Status, y = log_DebtToIncomeRatio)) +
   geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
-  labs(title = "Współczynnik długu do przychodów w podziale na Loan_Status",
+  labs(title = "Współczynnik długu do przychodów w podziale na status kredytu",
        x = "Loan Status",
        y = "Debt To Income Ratio") +
+  theme_minimal()
+
+```
+
+- Loan Status vs Loan Amount Term
+```{r}
+# Wykres ramka-wąsy (boxplot)
+boxplot(dane$Loan_Amount_Term ~ dane$Loan_Status,
+        main = "Rozkład czasu trwania kredytu według statusu pożyczki",
+        xlab = "Loan Status",
+        ylab = "Applicant Income",
+        col = c("lightblue", "lightgreen"),
+        notch = TRUE)
+
+# Zamiana Loan_Status na wartości numeryczne
+dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
+# Obliczenie współczynnika korelacji Pearsona
+pearson_corr1 <- cor(dane$Loan_Status_numeric, dane$Loan_Amount_Term, use = "complete.obs")
+print(paste("Współczynnik korelacji Pearsona:", pearson_corr1))
+
+# Wykres punktowy
+ggplot(dane, aes(x = Loan_Status, y = Loan_Amount_Term)) +
+  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  labs(title = "Czas trwania kredytu w podziale na status kredytu",
+       x = "Loan Status",
+       y = "Loan Amount Term") +
   theme_minimal()
 
 ```
