@@ -3,7 +3,7 @@ title: "Przygotowanie danych"
 author: "Czarnoksiężnicy z Oz"
 date: Opublikowane `r format(Sys.time(), "%A %d %B %Y")`
 ---
-## Dane
+## Wczytanie danych
 ```{r}
 dane <- read.csv("Hipoteczny.csv", header = TRUE)
 dane[dane == ""] <- NA
@@ -19,27 +19,25 @@ dane <- as.data.frame(dane)
 ### Sprawdzenie, które kolumny zawierają brakujące wartości
 ```{r}
 library(naniar)
-n_miss(dane) # Returns NA count in your data frame or column
-n_complete(dane) # Returns number of complete values
-pct_miss(dane) # Proportion or percentage of values that are NA
-miss_var_summary(dane) # A summary table of NA counts in your table
-
+n_miss(dane) 
+n_complete(dane) 
+pct_miss(dane) 
+miss_var_summary(dane) 
 ```
 
 W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich rekordów. Występują one w kolumnach Credit_History (50), Self_Employed (32), LoanAmount (22), Dependents(15), Loan_Amount_Term (14), Gender(13) i Married(3). 
 
 ### Wyliczenie procentu brakujących danych w każdej kolumnie
 ```{r}
-miss_case_table(dane) # A summary table of NAs by case (observation)
-
+miss_case_table(dane)
 ```
 
 480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych rekordów). Stanowi to 78,18% wszystkich obserwacji.
 
 ### Wykonanie wizualizacji braków danych
 ```{r}
-vis_miss(dane, cluster = TRUE, sort_miss = TRUE) # Visualize locations of NA as a ggplot object
-gg_miss_fct(dane, fct=Self_Employed) # Create a heatmap of NA counts by group
+vis_miss(dane, cluster = TRUE, sort_miss = TRUE) 
+gg_miss_fct(dane, fct=Self_Employed) 
 ```
 Braki w Self_Employed mogą być efektem niepodania informacji przez aplikantów lub nieposiadania formalnego zatrudnienia.
 
@@ -66,13 +64,13 @@ Patrząc na rozkład wartości w kolumnie Credit_History oraz na liczbę brakuj�
 
 Podobnie w przypadku braków w kolumnie Self_Employment - mogą one reprezentować kredytobiorców, którzy nie chcieli przyznawać się do samozatrudnienia lub uznali, że nie muszą oni wypełniać tej kolumny.
 
+Tym samym, braki w tych dwóch zmiennych uznane zostają za MNAR (Missing Not at Random). 
+
 Braki w kolumnie LoanAmount mogą reprezentować klientów, który złożyli wniosek kredytowy bez konkretnej kwoty, zakładając, że kwota zostanie ustalona podczas analizy. Co ciekawe spośród wierszy charakteryzujących się wartością NA w kolumnie LoanAmount równo połowa ma LoanStatus równy Y i połowa równu N.
 
-Braki w kolumnie Loan_Amount_Term sytuacja może wyglądać podobnie - mogą to być klienci, którzy nie wypełnili wartości w kolumnie, zakładając domyślne ustawienia banku. 
+Braki w kolumnie Loan_Amount_Term sytuacja może wyglądać podobnie - mogą to być klienci, którzy nie wypełnili wartości w kolumnie, zakładając domyślne ustawienia banku. Dlatego braki w kolumnach LoanAmount i Loan_Amount_Term również zostają uznane za potencjalne MNAR.
 
-Braki w kolumnie Gender mogą reprezentować osoby, które nie chciały podawać tej informacji, uznając, że płeć nie powinna mieć wpływu na decyzje kredytową.
-
-Braki w kolumnie Dependents mogą oznaczać świadome pominięcie pytania w obawie przed negatywnym wpływem odpowiedzi na zdolność kredytową lub po prostu z braku obowiązku. 
+Braki w kolumnie Gender mogą reprezentować osoby, które nie chciały podawać tej informacji, uznając, że płeć nie powinna mieć wpływu na decyzje kredytową. Braki w kolumnie Dependents mogą oznaczać świadome pominięcie pytania w obawie przed negatywnym wpływem odpowiedzi na zdolność kredytową lub po prostu z braku obowiązku. Dlatego braki tej zmiennej, braki zmiennej Married oraz braki zmiennej Gender zostają uznane za MNAR.
 
 
 Wracając do wykresu przecięć wartości - Kombinacje z małą liczbą braków mogą być przypadkowe i niekoniecznie oznaczają zależności.
@@ -94,40 +92,36 @@ Można zauważyć, że z pośród kredytobiorców z wartością NA w kolumnie Se
 
 To może być argumentem za przyjęciem tezy, że osoby, które nie odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
 
+
+
 ## 3. Uzupełnianie braków danych
 ### Autor: Mikołaj Zalewski
 
 ### Decyzja o strategii postępowania z brakującymi danymi
 Obseracje z brakiem danych w kolumnie Credit_History zastąpimy wartością 0 zgodnie z naszymi wcześniejszymi wnioskami.
-Obserwacje z brakiem danych w kolumnie LoanAmount uzupełnione będą wartościami mediany. Użycie mediany zamiast średniej wyeliminuje problem zbyt dużych wartości skrajnych.
 Obserwacje z brakiem danych w kolumnach Gender i Married zostaną zastąpione wartością "undefined", czyli po polsku "nieokreślone". Każdy wniosek o kredyt jest ważny, więc usuwanie obserwacji nie jest dobrym rozwiązaniem.
 Obserwacje z brakiem danych w kolumnie Dependents zostaną zastąpione wartością 0.
 Dla obserwacji z brakiem danych w kolumnie Loan_Amount_Term można przyjąć strategię inputacji wartością, która występuje w znaczącej większości obserwacji, czyli najpopularniejszym czasem, na jaki bierze się kredyt (czyli 360 dni).
 Obserwacje z brakiem danych w kolumnie Self_Employed zgodnie z naszą wcześniej opisaną tezą zamieniamy na wartość "Yes", czyli samozatrudnienie.
 
+Obserwacje z brakiem danych w kolumnie LoanAmount uzupełnione będą za pomocą techniki Hot Deck, w której brakująca wartość zastępowana wartością od klienta o najbardziej podobnych cechach. 
+
 ### Przeprowadzenie powyższej strategii
 ```{r}
-### Uzupełnienie zmiennej Credit_History
 dane$Credit_History[is.na(dane$Credit_History)] <- 0
-### Uzupełnienie zmniennej LoanAmount
-medina_kredyt <- median(dane$LoanAmount, na.rm = TRUE) #zrobienie obiektu zawierającego medianę z wszystkich wyników LoanAmount wyłączając NA
-dane$LoanAmount[is.na(dane$LoanAmount)] <- medina_kredyt
-### Uzupełnienie zmniennej Gender
 dane$Gender[is.na(dane$Gender)] <- "Undefined"
-### Uzupełnienie zmniennej Married
 dane$Married[is.na(dane$Married)] <- "Undefined"
-### Uzupełnienie zmniennej Dependents
 dane$Dependents[is.na(dane$Dependents)] <- 0
-### Uzupełnienie zmniennej Loan_Amount_Term
 dane$Loan_Amount_Term[is.na(dane$Loan_Amount_Term)] <- 360
-### Uzupełnienie zmniennej Self_Employed
 dane$Self_Employed[is.na(dane$Self_Employed)] <- "Yes"
+library(VIM)
+dane <- hotdeck(dane, variable = "LoanAmount")
+dane <- dane %>% select(-LoanAmount_imp)
 ```
 
 ### Weryfikacja poprawności
 ```{r}
-n_miss(dane) # Returns NA count in your data frame or column
-
+n_miss(dane) 
 ```
 
 ## 4. Identyfikacja i usunięcie nieprawidłowych wartości
@@ -166,30 +160,31 @@ Dla rekordów, których wartości nie spełniały ograniczeń przypisane powinny
 
 ### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych) dla wartości tekstowych
 ```{r}
-dane$Gender <- factor(dane$Gender,
+dane <- dane %>% mutate(
+  Gender = factor(dane$Gender,
                       levels = c("Male", "Female", "Undefined"),
-                      labels = c("Male", "Female", "Undefined"))
-dane$Married <- factor(dane$Married,
+                      labels = c("Male", "Female", "Undefined")),
+  Married = factor(dane$Married,
                        levels = c("No", "Yes", "Undefined"),
-                       labels = c("No", "Yes", "Undefined"))
-dane$Dependents <- factor(dane$Dependents,
+                       labels = c("No", "Yes", "Undefined")),
+  Dependents = factor(dane$Dependents,
                           levels = c("0", "1", "2", "3+"),
-                          labels = c("0", "1", "2", "3+"))
-dane$Education <- factor(dane$Education,
+                          labels = c("0", "1", "2", "3+")),
+  Education = factor(dane$Education,
                          levels = c("Not Graduate", "Graduate"),
-                         labels = c("Not Graduate", "Graduate"))
-dane$Self_Employed <- factor(dane$Self_Employed,
+                         labels = c("Not Graduate", "Graduate")),
+  Self_Employed = factor(dane$Self_Employed,
                              levels = c("No", "Yes"),
-                             labels = c("No", "Yes"))
-dane$Loan_Amount_Term <- factor(dane$Loan_Amount_Term,
+                             labels = c("No", "Yes")),
+  Loan_Amount_Term = factor(dane$Loan_Amount_Term,
                            levels = c("12", "36", "60", "84", "120", "180", "240", "300", "360", "480"),
-                           labels = c("1", "3", "5", "7", "10", "15", "20", "25", "30", "40"))
-dane$Property_Area <- factor(dane$Property_Area,
+                           labels = c("1", "3", "5", "7", "10", "15", "20", "25", "30", "40")),
+  Property_Area = factor(dane$Property_Area,
                              levels = c("Rural", "Semiurban", "Urban"),
-                             labels = c("Rural", "Semiurban", "Urban"))
-dane$Loan_Status <- factor(dane$Loan_Status,
+                             labels = c("Rural", "Semiurban", "Urban")),
+  Loan_Status = factor(dane$Loan_Status,
                            levels = c("N", "Y"),
-                           labels = c("No", "Yes"))
+                           labels = c("No", "Yes")))
 
 table(dane$Gender) 
 table(dane$Married) 
@@ -331,11 +326,11 @@ iqr_outliers_ApplicantIncome <- outliers(dane_outliers, "ApplicantIncome")
 iqr_outliers_CoapplicantIncome <- outliers(dane_outliers, "CoapplicantIncome")
 iqr_outliers_LoanAmount <- outliers(dane_outliers, "LoanAmount")
 
-common_outliers_ApplicantIncome <- intersect(
+common_outliers_ApplicantIncome <- inner_join(
   z_outliers_ApplicantIncome, iqr_outliers_ApplicantIncome)
-common_outliers_CoapplicantIncome <- intersect(
+common_outliers_CoapplicantIncome <- inner_join(
   z_outliers_CoapplicantIncome, iqr_outliers_CoapplicantIncome)
-common_outliers_LoanAmount <- intersect(
+common_outliers_LoanAmount <- inner_join(
   z_outliers_LoanAmount, iqr_outliers_LoanAmount)
 
 common_outliers_ApplicantIncome
@@ -357,7 +352,6 @@ dane <- dane %>%
     log_CoapplicantIncome = log1p(CoapplicantIncome),
     log_LoanAmount = log1p(LoanAmount),
   )
-
 log_plot_vars <- c("log_ApplicantIncome", "log_CoapplicantIncome", "log_LoanAmount")
 log_plot_list <- lapply(log_plot_vars, function(var) {
   ggplot(dane, aes_string(x = var)) +
@@ -442,6 +436,7 @@ combined_plots
 
 ### Zapisanie przygotowanych danych do nowego pliku csv
 ```{r}
+dane
 write.csv(dane, "DanePoprawione.csv", row.names = FALSE)
 ```
 

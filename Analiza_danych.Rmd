@@ -3,200 +3,69 @@ title: "Analiza danych"
 author: "Czarnoksiężnicy z Oz"
 date: Opublikowane `r format(Sys.time(), "%A %d %B %Y")`
 ---
+
 ## Dane
+
 ```{r}
-dane <- read.csv("DanePoprawione.csv", header = TRUE)
-dane[dane == ""] <- NA
+dane <- read.csv("DanePoprawione.csv", header = TRUE, stringsAsFactors = TRUE)
 View(dane)
-
 dane <- as.data.frame(dane)
-
+dane$Loan_Amount_Term <- as.factor(dane$Loan_Amount_Term)
 ```
 
 ## 1. Jednowymiarowa analiza danych
+
 ### Autor: Mikołaj Zalewski
 
-``` {r}
-## zmienna Applicant income
-## statystki opisowe
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+num_vars <- c("ApplicantIncome", "CoapplicantIncome", "LoanAmount", "TotalIncome", "DebtToIncomeRatio")
+num_dane_long <- dane %>%
+  select(all_of(num_vars)) %>%
+  pivot_longer(cols = everything(), names_to = "Zmienne", values_to = "Wartość")
+
+ggplot(num_dane_long, aes(x = Wartość, fill = Zmienne)) +
+  geom_histogram(bins = 30, alpha = 0.7, color = "black") +
+  facet_wrap(~Zmienne, scales = "free") +
+  theme_minimal() +
+  labs(title = "Histogramy zmiennych numerycznych")
+
+ggplot(num_dane_long, aes(x = Zmienne, y = Wartość, fill = Zmienne)) +
+  geom_boxplot() +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = "Boxploty zmiennych numerycznych")
+
+cat_vars <- c("Gender", "Married", "Dependents", "Education", "Self_Employed", "Loan_Amount_Term", "Credit_History", "Property_Area", "Loan_Status")
+
+dane_cat_long <- dane %>%
+  select(all_of(cat_vars)) %>%
+  pivot_longer(cols = everything(), names_to = "Zmienna", values_to = "Kategoria")
+
+ggplot(dane_cat_long, aes(x = Kategoria, fill = Kategoria)) +
+  geom_bar() +
+  facet_wrap(~Zmienna, scales = "free") +  # Każda zmienna kategoryczna na osobnym panelu
+  theme_minimal() +
+  labs(title = "Wykresy częstości dla zmiennych kategorycznych", x = "Kategoria", y = "Liczność")
+
 summary(dane$ApplicantIncome)
-## histogram
-hist(dane$ApplicantIncome,
-     main = "Histogram zmiennej ApplicantIncome",   
-     xlab = "Wartości",         
-     ylab = "Częstotliwość",     
-     col = "blue",               
-     border = "black") 
-## wykres pudelkowy
-boxplot(dane$ApplicantIncome, 
-        main = "Wykres pudełkowy dla zmiennej ApplicantIncome",  
-        ylab = "Wartości",          
-        col = "yellow",          
-        border = "black") 
-
-## zmienna Coapplicant income
-## statystki opisowe
 summary(dane$CoapplicantIncome)
-## histogram
-hist(dane$CoapplicantIncome,
-     main = "Histogram zmiennej ApplicantIncome",   
-     xlab = "Wartości",         
-     ylab = "Częstotliwość",     
-     col = "blue",               
-     border = "black") 
-## wykres pudelkowy
-boxplot(dane$CoapplicantIncome, 
-        main = "Wykres pudełkowy dla zmiennej ApplicantIncome",  
-        ylab = "Wartości",          
-        col = "yellow",          
-        border = "black") 
-
-##zmienna loan amount term 
-## statystki opisowe
-summary(dane$Loan_Amount_Term)
-## histogram
-hist(dane$Loan_Amount_Term,
-     main = "Histogram zmiennej Loan_Amount_Term",   
-     xlab = "Wartości",         
-     ylab = "Częstotliwość",     
-     col = "blue",               
-     border = "yellow") 
-## wykres pudelkowy
-boxplot(dane$ApplicantIncome, 
-        main = "Wykres pudełkowy dla zmiennej Loan_Amount_Term",  
-        ylab = "Wartości",          
-        col = "yellow",          
-        border = "black") 
-
-## zmienna loan amount 
-## statystki opisowe
 summary(dane$LoanAmount)
-## histogram
-hist(dane$LoanAmount,
-     main = "Histogram zmiennej LoanAmount",   
-     xlab = "Wartości",         
-     ylab = "Częstotliwość",     
-     col = "blue",               
-     border = "black") 
-## wykres pudelkowy
-boxplot(dane$LoanAmount, 
-        main = "Wykres pudełkowy dla zmiennej LoanAmount",  
-        ylab = "Wartości",          
-        col = "yellow",          
-        border = "black") 
-
-## zmienna TotalIncome 
 summary(dane$TotalIncome)
-## histogram
-hist(dane$TotalIncome,
-     main = "Histogram zmiennej TotalIncome",   
-     xlab = "Wartości",         
-     ylab = "Częstotliwość",     
-     col = "blue",               
-     border = "black") 
-## wykres pudelkowy
-boxplot(dane$TotalIncome, 
-        main = "Wykres pudełkowy dla zmiennej TotalIncome",  
-        ylab = "Wartości",          
-        col = "yellow",          
-        border = "black") 
-## zmienna debt to income ratio 
 summary(dane$DebtToIncomeRatio)
-## histogram
-hist(dane$DebtToIncomeRatio,
-     main = "Histogram zmiennej DebtToIncomeRatio",   
-     xlab = "Wartości",         
-     ylab = "Częstotliwość",     
-     col = "blue",               
-     border = "black") 
-## wykres pudelkowy
-boxplot(dane$DebtToIncomeRatio, 
-        main = "Wykres pudełkowy dla zmiennej DebtToIncomeRatio",  
-        ylab = "Wartości",          
-        col = "yellow",          
-        border = "black") 
-
-#zmienna gender
-freq <- table(dane$Gender)
-barplot(freq,
-        main = "Wykres słupkowy zmiennej Gender ", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black") 
-
-#zmienna Married 
-freq1<- table(dane$Married)
-barplot(freq1,
-        main = "Wykres słupkowy zmiennej Married", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black") 
-
-#zmienna dependents 
-freq2<- table(dane$Dependents)
-barplot(freq2,
-        main = "Wykres słupkowy zmiennej Dependents", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black") 
-
-#zmienna education
-freq3<- table(dane$Education)
-barplot(freq3,
-        main = "Wykres słupkowy zmiennej Education", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black") 
-
-#zmienna self employed
-freq4<- table(dane$Self_Employed)
-barplot(freq4,
-        main = "Wykres słupkowy zmiennej Self Employed", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black") 
-
-#zmienna credit history
-freq5<- table(dane$Credit_History)
-barplot(freq5,
-        main = "Wykres słupkowy zmiennej Credit History", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black") 
-
-#zmienna property area
-freq6 <- table(dane$Property_Area)
-barplot(freq6,
-        main = "Wykres słupkowy zmiennej property area", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black")
-
-#zmienna loan status 
-freq7 <- table(dane$Loan_Status)
-barplot(freq7,
-        main = "Wykres słupkowy zmiennej loan status", 
-        xlab = "Kategorie", 
-        ylab = "Częstotliwość", 
-        col = "green", 
-        border = "black")
 ```
 
 ## 2. Dwuwymiarowa analiza danych
-### Autor: Dominika Szymczak
 
+### Autor: Dominika Szymczak
 
 #### Dwuwymiarowa analiza danych jakościowych:
 
-- Loan Status vs Gender
-``` {r}
+-   Loan Status vs Gender
+
+```{r}
 library(mosaic)
 library(knitr)
 library(ggplot2)
@@ -217,8 +86,9 @@ ggplot(as.data.frame(LoanStatus_vs_Gender), aes(Var1, Var2, fill = Freq)) +
 
 ```
 
-- Loan Status vs Married
-``` {r}
+-   Loan Status vs Married
+
+```{r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Married
 LoanStatus_vs_Married <- table(dane$Loan_Status, dane$Married)
 kable(LoanStatus_vs_Married, caption = "Tabela krzyżowa: Loan Status vs Married")
@@ -234,8 +104,9 @@ ggplot(as.data.frame(LoanStatus_vs_Married), aes(Var1, Var2, fill = Freq)) +
 
 ```
 
-- Loan Status vs Dependents
-``` {r}
+-   Loan Status vs Dependents
+
+```{r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Dependents
 LoanStatus_vs_Dependents <- table(dane$Loan_Status, dane$Dependents)
 kable(LoanStatus_vs_Dependents, caption = "Tabela krzyżowa: Loan Status vs Dependents")
@@ -251,8 +122,9 @@ ggplot(as.data.frame(LoanStatus_vs_Dependents), aes(Var1, Var2, fill = Freq)) +
 
 ```
 
-- Loan Status vs Education
-``` {r}
+-   Loan Status vs Education
+
+```{r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Education
 LoanStatus_vs_Education <- table(dane$Loan_Status, dane$Education)
 kable(LoanStatus_vs_Education, caption = "Tabela krzyżowa: Loan Status vs Education")
@@ -268,8 +140,9 @@ ggplot(as.data.frame(LoanStatus_vs_Education), aes(Var1, Var2, fill = Freq)) +
 
 ```
 
-- Loan Status vs Self_Employed
-``` {r}
+-   Loan Status vs Self_Employed
+
+```{r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Self_Employed
 LoanStatus_vs_SelfEmployed <- table(dane$Loan_Status, dane$Self_Employed)
 kable(LoanStatus_vs_SelfEmployed, caption = "Tabela krzyżowa: Loan Status vs Self Employed")
@@ -285,8 +158,9 @@ ggplot(as.data.frame(LoanStatus_vs_SelfEmployed), aes(Var1, Var2, fill = Freq)) 
 
 ```
 
-- Loan Status vs Credit History
-``` {r}
+-   Loan Status vs Credit History
+
+```{r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Credit_History
 LoanStatus_vs_CreditHistory <- table(dane$Loan_Status, dane$Credit_History)
 kable(LoanStatus_vs_CreditHistory, caption = "Tabela krzyżowa: Loan Status vs Credit History")
@@ -302,8 +176,9 @@ ggplot(as.data.frame(LoanStatus_vs_CreditHistory), aes(Var1, Var2, fill = Freq))
 
 ```
 
-- Loan Status vs Property Area
-``` {r}
+-   Loan Status vs Property Area
+
+```{r}
 # Tworzenie tabeli krzyżowej między Loan_Status i Property_Area
 LoanStatus_vs_PropertyArea <- table(dane$Loan_Status, dane$Property_Area)
 kable(LoanStatus_vs_PropertyArea, caption = "Tabela krzyżowa: Loan Status vs Property Area")
@@ -319,10 +194,10 @@ ggplot(as.data.frame(LoanStatus_vs_PropertyArea), aes(Var1, Var2, fill = Freq)) 
 
 ```
 
-
 #### Dwuwymiarowa analiza danych mieszanych (jakościowej z ilościową)
 
-- Loan Status vs Applicant Income
+-   Loan Status vs Applicant Income
+
 ```{r}
 # Wykres ramka-wąsy (boxplot)
 boxplot(dane$log_ApplicantIncome ~ dane$Loan_Status,
@@ -349,7 +224,8 @@ ggplot(dane, aes(x = Loan_Status, y = log_ApplicantIncome)) +
 
 ```
 
-- Loan Status vs Loan Amount
+-   Loan Status vs Loan Amount
+
 ```{r}
 # Wykres ramka-wąsy (boxplot)
 boxplot(dane$log_LoanAmount ~ dane$Loan_Status,
@@ -374,7 +250,8 @@ ggplot(dane, aes(x = Loan_Status, y = log_LoanAmount)) +
 
 ```
 
-- Loan Status vs Total Income
+-   Loan Status vs Total Income
+
 ```{r}
 # Wykres ramka-wąsy (boxplot)
 boxplot(dane$log_TotalIncome ~ dane$Loan_Status,
@@ -383,10 +260,6 @@ boxplot(dane$log_TotalIncome ~ dane$Loan_Status,
         ylab = "Tota lIncome",
         col = c("lightblue", "lightgreen"),
         notch = TRUE)
-
-# Jednokierunkowa ANOVA - istotność
-anova_result3 <- aov(log_TotalIncome ~ Loan_Status, data = dane)
-summary(anova_result3)
 
 # Obliczenie współczynnika korelacji Pearsona
 pearson_corr3 <- cor(dane$Loan_Status_numeric, dane$log_TotalIncome, use = "complete.obs")
@@ -403,7 +276,8 @@ ggplot(dane, aes(x = Loan_Status, y = log_TotalIncome)) +
 
 ```
 
-- Loan Status vs DebtToIncomeRatio
+-   Loan Status vs DebtToIncomeRatio
+
 ```{r}
 # Wykres ramka-wąsy (boxplot)
 boxplot(dane$log_DebtToIncomeRatio ~ dane$Loan_Status,
@@ -428,7 +302,8 @@ ggplot(dane, aes(x = Loan_Status, y = log_DebtToIncomeRatio)) +
 
 ```
 
-- Loan Status vs Loan Amount Term
+-   Loan Status vs Loan Amount Term
+
 ```{r}
 # Wykres ramka-wąsy (boxplot)
 boxplot(dane$Loan_Amount_Term ~ dane$Loan_Status,
@@ -456,12 +331,15 @@ ggplot(dane, aes(x = Loan_Status, y = Loan_Amount_Term)) +
 ```
 
 ## 3. Budowanie i testowanie hipotez
+
 ### AUtor: Julia Sowińska
 
 Dla wszystkich postawionych hipotez, przyjmuje się poziom istotności alpha w wysokości 0,05 (5%).
 
 ### Hipotezy:
+
 #### A. Loan_Status i Credit_History
+
 H₀: Prawdopodobieństwo przyznania kredytu (Loan_Status) jest niezależne od posiadania historii kredytowej (Credit_History).
 H₁: Prawdopodobieństwo przyznania kredytu różni się w zależności od posiadania historii kredytowej.
 
@@ -472,25 +350,27 @@ print(LoanStatus_vs_CreditHistory)
 
 Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), jest spełnione, dlatego zostanie wykorzystany test Chi-kwadrat.
 
-``` {r}
-# Test chi-kwadrat
+```{r}
+library(ggstatsplot)
 chi_kwadrat <- chisq.test(LoanStatus_vs_CreditHistory)
 print(chi_kwadrat)
+ggbarstats(data = dane, x = Credit_History, y = Loan_Status)
 ```
 
 P-value jest mniejsze niż przyjęty poziom istotności, co pozwala odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu zależności między zmiennymi Loan_Status i Credit_History.
 
-``` {r}
+```{r}
 # Współczynnik Craméra
 n <- sum(LoanStatus_vs_CreditHistory)
 phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_CreditHistory)) - 1)))
 names(phi_cramer) <- "Cramer's V"
 print(phi_cramer)
 ```
+
 Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,428, co świadczy o umiarkowanym związku między zmiennymi Loan_Status i Credit_History.
 
-
 #### B. Loan_Status i Loan_Amount_Term
+
 H₀: Długość okresu spłaty kredytu (Loan_Amount_Term) nie wpływa na decyzję o przyznaniu kredytu.
 H₁: Długość okresu spłaty kredytu wpływa na decyzję o przyznaniu kredytu.
 
@@ -502,16 +382,16 @@ print(LoanStatus_vs_Loan_Amount_Term)
 
 Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), nie jest spełnione, więc wykorzystany zostanie test Fishera.
 
-``` {r}
+```{r}
 fisher_test <- fisher.test(LoanStatus_vs_Loan_Amount_Term)
 print(fisher_test)
+ggbarstats(data = dane, x = Loan_Amount_Term, y = Loan_Status, test = "fisher")
 ```
 
 P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Loan_Status i Loan_Amount_Term.
 
-
-
 #### C. Loan_Status i Property_Area
+
 H₀: Obszar zamieszkania kredytobiorcy (Property_Area) nie wpływa na decyzję o przyznaniu kredytu.
 H₁: Obszar zamieszkania kredytobiorcy wpływa na decyzję o przyznaniu kredytu.
 
@@ -522,25 +402,27 @@ print(LoanStatus_vs_Property_Area)
 
 Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), jest spełnione, dlatego zostanie wykorzystany test Chi-kwadrat.
 
-``` {r}
+```{r}
 # Test chi-kwadrat
 chi_kwadrat <- chisq.test(LoanStatus_vs_PropertyArea)
 print(chi_kwadrat)
+ggbarstats(data = dane, x = Property_Area, y = Loan_Status)
 ```
 
 P-value jest mniejsze niż przyjęty poziom istotności, co pozwala odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu zależności między zmiennymi Loan_Status i Property_Area.
 
-``` {r}
+```{r}
 # Współczynnik Craméra
 n <- sum(LoanStatus_vs_PropertyArea)
 phi_cramer <- sqrt(chi_kwadrat$statistic / (n * (min(dim(LoanStatus_vs_PropertyArea)) - 1)))
 names(phi_cramer) <- "Cramer's V"
 print(phi_cramer)
 ```
+
 Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,142, co świadczy o słabym związku między zmiennymi Loan_Status i PropertyArea.
 
-
 #### D. Loan_Status i log_DebtToIncomeRatio
+
 H₀: Średni wskaźnik długu do dochodu (DebtToIncomeRatio) nie różni się między grupami, którym przyznano i nie przyznano kredytu.
 H₁: Średni wskaźnik długu do dochodu różni się między grupami, którym przyznano i nie przyznano kredytu.
 
@@ -562,16 +444,16 @@ print(bartlett_test)
 
 Zarówno założenie o normalności rozkładu zmiennej log_DebtToIncomeRatio w każdej z grup Loan_Status (Yes/No), jak i założenie o jednorodności wariancji nie zostały spełnione, dlatego zamiast testu t-Studenta, stosowany będzie test U Manna-Whitneya.
 
-``` {r}
+```{r}
 mannwhitney <- wilcox.test(log_DebtToIncomeRatio ~ Loan_Status, data = dane)
   print(mannwhitney)
+gghistostats(data = dane, x = log_DebtToIncomeRatio, y = Loan_Status)
 ```
 
 P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Loan_Status i DebtToIncomeRatio.
 
-
-
 #### E. Loan_Status i log_TotalIncome
+
 H₀: Średni całkowity dochód (TotalIncome) nie różni się między grupami, którym przyznano i nie przyznano kredytu.
 H₁: Średni całkowity dochód różni się między grupami, którym przyznano i nie przyznano kredytu.
 
@@ -593,41 +475,22 @@ print(bartlett_test)
 
 Zarówno założenie o normalności rozkładu zmiennej log_DebtToIncomeRatio w każdej z grup Loan_Status (Yes/No), jak i założenie o jednorodności wariancji nie zostały spełnione, dlatego zamiast testu t-Studenta, stosowany będzie test U Manna-Whitneya.
 
-``` {r}
+```{r}
 mannwhitney <- wilcox.test(log_TotalIncome ~ Loan_Status, data = dane)
   print(mannwhitney)
+gghistostats(data = dane, x = log_TotalIncome, y = Loan_Status)
 ```
 
 P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Loan_Status i TotalIncome
 
-
-
-#### F. Credit_History i Loan_Amount_Term
-H₀: Posiadanie historii kredytowej (Credit_History) nie jest powiązane z długością okresu spłaty kredytu (Loan_Amount_Term).
-H₁: Posiadanie historii kredytowej jest powiązane z długością okresu spłaty kredytu.
-
-```{r}
-Credit_History_vs_Loan_Amount_Term <- table(dane$Credit_History, dane$Loan_Amount_Term)
-print("Tabela krzyżowa:")
-print(Credit_History_vs_Loan_Amount_Term)
-```
-
-Założenie o minimalnej liczbie oczekiwanych obserwacji w każdej komórce tabeli kontyngencji, która powinna wynosić co najmniej 5 (założenie testu chi-kwadrat), nie jest spełnione, więc wykorzystany zostanie test Fishera.
-
-``` {r}
-fisher_test <- fisher.test(Credit_History_vs_Loan_Amount_Term)
-print(fisher_test)
-```
-
-P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między zmiennymi Credit_History i Loan_Amount_Term.
-
 Zależność zmiennych Credit_History oraz Property_Area ze zmienną Loan_Status zostały uznane za istotne.
 
 ## 4. Grupy klientów według kombinacji Credit_History i Property_Area
-### Autor: 
+### Autor: Mikołaj Zalewski
 
 ### Dodanie nowej zmiennej grupującej klientów według Credit_History i Property_Area na 6 grup
-``` {r}
+
+```{r}
 dane$Group <- paste(dane$Property_Area, dane$Credit_History, sep = "_")
 dane$Group <- factor(dane$Group,
                           levels = c("Urban_Existing", "Semiurban_Existing", "Rural_Existing", "Urban_Not existing", "Semiurban_Not existing", "Rural_Not existing"),
@@ -636,43 +499,72 @@ dane$Group <- factor(dane$Group,
 
 ### Skrócone statystyki opisowe dla każdej grupy
 ``` {r}
+statystyki <- dane %>%
+  group_by(Group) %>%
+  summarise(
+    Liczba_osob = n(),
+    Procent_mezczyzn = (sum(Gender == "Male", na.rm = TRUE) / Liczba_osob) * 100,
+    Procent_married = (sum(Married == "Yes", na.rm = TRUE) / Liczba_osob) * 100,
+    Procent_Graduate = (sum(Education == "Graduate", na.rm = TRUE) / Liczba_osob) * 100,
+    Srednia_TotalIncome = mean(TotalIncome, na.rm = TRUE)
+  )
 
+statystyki
+## w tych grupach procent mężczyzn największy to 88 w rural not existing a najmniejszy to 67 w semiurban not existing 
+## w tych grupach różnica między największą wartością a najmniejszą jeśli chodzi o bycie żonatym/zamężnym wynosi 11,8 punkta procentowego
+## Pośród tych grup srednia maksymalna wartośc zmiennej total income różni się od minilanej wartości w o 1500
 ```
 
 ### Proporcje przyznanych kredytów w każdej grupie
 ``` {r}
+proporcje_loan_status <- dane %>%
+  group_by(Group, Loan_Status) %>%
+  summarise(Liczba = n(), .groups = "drop") %>%
+  group_by(Group) %>%
+  mutate(Proporcja = Liczba / sum(Liczba) * 100)
+
+ggplot(proporcje_loan_status, aes(x = "", y = Proporcja, fill = Loan_Status)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") + 
+  facet_wrap(~ Group) +  
+  theme_void() +  
+  labs(title = "Proporcja osób, które otrzymały kredyt w każdej grupie") +
+  scale_fill_manual(values = c("green", "red")) +  # Kolory dla 'Loan_Status'
+  geom_text(aes(label = paste0(round(Proporcja, 1), "%")), position = position_stack(vjust = 0.5), color = "white")  # Dodanie procentów na wykresach
 
 ```
 
-### Wizualizacja
-``` {r}
 
-```
-
-## 5. Model predykcyjny 
-### Autor:
+## 5. Model predykcyjny
+### Autor: Julia Sowińska
 
 ### Podział danych na zbiór treningowy i testowy
-``` {r}
-dane$Loan_Status_Binary <- ifelse(dane$Loan_Status == "Yes", 1, 0)
+
+```{r}
+dane$Loan_Status_Binary <- dane$Loan_Status_numeric
 set.seed(123)
 train_idx <- sample(1:nrow(dane), 0.7 * nrow(dane))
 train <- dane[train_idx, ]
 test <- dane[-train_idx, ]
 ```
 
-Dane zostały podzielona na dwa zbiory - treningowy i testowy, by uniknąć przeuczenia (overfittingu) oraz zapewnić rzetelną ocenę modelu poprzez testowanie modelu na danych, których nie widział podczas treningu. Zdecydowano się na podział: 70% danych do treningu i 30% danych do testu.
+Dane zostały podzielona na dwa zbiory - treningowy i testowy, by uniknąć przeuczenia (overfittingu) oraz zapewnić rzetelną ocenę modelu poprzez testowanie modelu na danych, których nie widział podczas treningu.
+Zdecydowano się na podział: 70% danych do treningu i 30% danych do testu.
 
 ### Budowa modelu
-``` {r}
+
+```{r}
 model <- glm(Loan_Status_Binary ~ Credit_History + Property_Area, data = train, family = "binomial")
 summary(model)
 ```
 
-Zbudowany został model regresji logistycznej (logit), który był naturalnym wyborem dla problemu klasyfikacji binarnej, jakim było przyznanie bądź nieprzyznanie kredytu. Model ten został wybrany ze względu na jego prostotę, szybkość i efektywność, a także ze względu na łatwiejszą interpretację. Jest to model predykcyjny, zatem zdecydowano się na pozostawienie w nim wszystkich zmiennych bez względu na istotność statystyczną. 
+Zbudowany został model regresji logistycznej (logit), który był naturalnym wyborem dla problemu klasyfikacji binarnej, jakim było przyznanie bądź nieprzyznanie kredytu.
+Model ten został wybrany ze względu na jego prostotę, szybkość i efektywność, a także ze względu na łatwiejszą interpretację.
+Jest to model predykcyjny, zatem zdecydowano się na pozostawienie w nim wszystkich zmiennych bez względu na istotność statystyczną.
 
 ### Ocena modelu
-``` {r}
+
+```{r}
 predictions <- predict(model, newdata = test, type = "response")
 predicted_classes <- ifelse(predictions > 0.5, "Yes", "No")
 confusion_matrix <- table(Predicted = predicted_classes, Actual = test$Loan_Status)
@@ -690,22 +582,48 @@ precision <- confusion_matrix["Yes", "Yes"] / (confusion_matrix["Yes", "Yes"] + 
 cat("Precyzja:", precision, "\n")
 recall <- confusion_matrix["Yes", "Yes"] / (confusion_matrix["Yes", "Yes"] + confusion_matrix["Yes", "No"])
 cat("Czułość:", recall, "\n")
+
+f1_score <- 2 * (precision * recall) / (precision + recall)
+cat("F1-score:", f1_score, "\n")
 ```
 
-Model prawidłowo klasyfikuje około 75,68% przypadków. Około 88,46% przewidywań przyznania kredytu jest prawidłowe i około 79,31% rzeczywistych przyznań kredytu zostało poprawnie wykrytych.
+Model prawidłowo klasyfikuje około 75,68% przypadków.
+Około 88,46% przewidywań przyznania kredytu jest prawidłowe i około 79,31% rzeczywistych przyznań kredytu zostało poprawnie wykrytych.
 
-``` {r}
+F1 Interpretacja:
+Blisko 1 → Model świetnie klasyfikuje obie klasy.
+Blisko 0 → Model źle rozróżnia klasy (np. zawsze przewiduje tylko "Yes").
+Przykład: F1-score = 0.85 oznacza, że model jest dobrze wyważony między precyzją a czułością.
+
+```{r}
 library(pROC)
 roc_curve <- roc(test$Loan_Status, predictions)
 plot(roc_curve, col = "blue")
 auc(roc_curve)
 ```
 
-AUC przyjmuje wartość 0,7614, co oznacza, że model jest przyzwoity. 
+AUC przyjmuje wartość 0,7614, co oznacza, że model jest przyzwoity.
 
-## 6. Podsumowanie 
-### Autor:
-
+### Wypróbowanie drzewa decyzyjnego
 ``` {r}
+library(rpart)
+library(rpart.plot)
 
+tree_model <- rpart(Loan_Status ~ Credit_History + Property_Area, data = dane, method = "class")
+
+rpart.plot(tree_model)
 ```
+
+```{r}
+tree_preds <- predict(tree_model, newdata = test, type = "class")
+# Macierz konfuzji
+tree_conf_matrix <- table(Predicted = tree_preds, Actual = test$Loan_Status)
+# Dokładność
+tree_accuracy <- sum(diag(tree_conf_matrix)) / sum(tree_conf_matrix)
+cat("Decision Tree Accuracy:", tree_accuracy, "\n")
+```
+Accuracy jest praktycznie taka sama, więc lepiej użyć prostrzego modelu - logitu.
+
+## 6. Podsumowanie
+### Autor: Dominika Szymczak
+
