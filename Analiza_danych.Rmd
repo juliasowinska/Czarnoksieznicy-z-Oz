@@ -70,19 +70,22 @@ library(mosaic)
 library(knitr)
 library(ggplot2)
 
+wykres_gr <- scale_fill_gradientn(colors = c("#42cec2", "#306591", "#002185", "#0f225f", "#142c45"))
+
 # Tworzenie tabeli krzyżowej między Loan_Status i Gender
 LoanStatus_vs_Gender <- table(dane$Loan_Status, dane$Gender)
 kable(LoanStatus_vs_Gender, caption = "Tabela krzyżowa: Loan Status vs Gender")
 
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_Gender, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Gender")
-LoanStatus_vs_PropertyArea <- table(dane$Loan_Status, dane$Property_Area)
 
 # Tworzenie wykresu ilościowego
+library(colorspace)
 ggplot(as.data.frame(LoanStatus_vs_Gender), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(x = "Loan Status", y = "Gender")
+  labs(x = "Loan Status", y = "Gender", fill = "ilość") +
+  wykres_gr
 
 ```
 
@@ -94,13 +97,14 @@ LoanStatus_vs_Married <- table(dane$Loan_Status, dane$Married)
 kable(LoanStatus_vs_Married, caption = "Tabela krzyżowa: Loan Status vs Married")
 
 # Tworzenie wykresu mozaikowego
-mosaicplot(LoanStatus_vs_Married, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Married")
+mosaicplot(LoanStatus_vs_Married, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Married", col=c("#42cec2", "#306591", "#002185", "#0f225f", "#142c45"))
 
 # Tworzenie wykresu ilościowego
 ggplot(as.data.frame(LoanStatus_vs_Married), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(x = "Loan Status", y = "Married")
+  labs(x = "Loan Status", y = "Married") +
+  wykres_gr
 
 ```
 
@@ -118,7 +122,8 @@ mosaicplot(LoanStatus_vs_Dependents, shade = TRUE, legend = TRUE, main = "Wykres
 ggplot(as.data.frame(LoanStatus_vs_Dependents), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(x = "Loan Status", y = "Dependents")
+  labs(x = "Loan Status", y = "Dependents") +
+  wykres_gr
 
 ```
 
@@ -136,7 +141,8 @@ mosaicplot(LoanStatus_vs_Education, shade = TRUE, legend = TRUE, main = "Wykres 
 ggplot(as.data.frame(LoanStatus_vs_Education), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(x = "Loan Status", y = "Education")
+  labs(x = "Loan Status", y = "Education") +
+  wykres_gr
 
 ```
 
@@ -154,7 +160,8 @@ mosaicplot(LoanStatus_vs_SelfEmployed, shade = TRUE, legend = TRUE, main = "Wykr
 ggplot(as.data.frame(LoanStatus_vs_SelfEmployed), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(x = "Loan Status", y = "Self Employed")
+  labs(x = "Loan Status", y = "Self Employed") +
+  wykres_gr
 
 ```
 
@@ -168,11 +175,12 @@ kable(LoanStatus_vs_CreditHistory, caption = "Tabela krzyżowa: Loan Status vs C
 # Tworzenie wykresu mozaikowego
 mosaicplot(LoanStatus_vs_CreditHistory, shade = TRUE, legend = TRUE, main = "Wykres Mozaikowy: Loan_Status vs Credit_History")
 
-# Ej Dominika - zobacz ten wykres
+# Tworzenie wykresu ilościowego
 ggplot(as.data.frame(LoanStatus_vs_CreditHistory), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(x = "Loan Status", y = "Credit History")
+  labs(x = "Loan Status", y = "Credit History") +
+  wykres_gr
 
 ```
 
@@ -190,7 +198,8 @@ mosaicplot(LoanStatus_vs_PropertyArea, shade = TRUE, legend = TRUE, main = "Wykr
 ggplot(as.data.frame(LoanStatus_vs_PropertyArea), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(x = "Loan Status", y = "Property Area")
+  labs(x = "Loan Status", y = "Property Area") +
+  wykres_gr
 
 ```
 
@@ -204,7 +213,7 @@ boxplot(dane$log_ApplicantIncome ~ dane$Loan_Status,
         main = "Rozkład dochodów aplikanta według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Applicant Income",
-        col = c("lightblue", "lightgreen"),
+        col = c("#42cec2", "#002185"),
         notch = TRUE)
 
 # Zamiana Loan_Status na wartości numeryczne
@@ -214,9 +223,11 @@ pearson_corr1 <- cor(dane$Loan_Status_numeric, dane$log_ApplicantIncome, use = "
 print(paste("Współczynnik korelacji Pearsona:", pearson_corr1))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = log_ApplicantIncome)) +
-  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+ggplot(dane, aes(x = Loan_Status, y = log_ApplicantIncome, fill = Loan_Status)) +
+  geom_jitter(aes(color = Loan_Status), width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  scale_fill_manual(values = c("No" = "#42cec2", "Yes" = "#002185")) + 
+  scale_color_manual(values = c("No" = "#002246", "Yes" = "#002246")) +
   labs(title = "Dochody aplikanta w podziale na status kredytu",
        x = "Loan Status",
        y = "Applicant Income") +
@@ -232,7 +243,7 @@ boxplot(dane$log_LoanAmount ~ dane$Loan_Status,
         main = "Rozkład wielkości pożyczki według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Loan Amount",
-        col = c("lightblue", "lightgreen"),
+        col = c("#42cec2", "#002185"),
         notch = TRUE)
 
 # Obliczenie współczynnika korelacji Pearsona
@@ -240,9 +251,11 @@ pearson_corr2 <- cor(dane$Loan_Status_numeric, dane$log_LoanAmount, use = "compl
 print(paste("Współczynnik korelacji Pearsona:", pearson_corr2))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = log_LoanAmount)) +
-  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+ggplot(dane, aes(x = Loan_Status, y = log_LoanAmount, fill = Loan_Status)) +
+  geom_jitter(aes(color = Loan_Status), width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  scale_fill_manual(values = c("No" = "#42cec2", "Yes" = "#002185")) + 
+  scale_color_manual(values = c("No" = "#002246", "Yes" = "#002246")) +
   labs(title = "Kwota kredytu w podziale na status kredytu",
        x = "Loan Status",
        y = "Loan Amount") +
@@ -258,7 +271,7 @@ boxplot(dane$log_TotalIncome ~ dane$Loan_Status,
         main = "Rozkład całkowitego dochodu według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Tota lIncome",
-        col = c("lightblue", "lightgreen"),
+        col = c("#42cec2", "#002185"),
         notch = TRUE)
 
 # Obliczenie współczynnika korelacji Pearsona
@@ -266,9 +279,11 @@ pearson_corr3 <- cor(dane$Loan_Status_numeric, dane$log_TotalIncome, use = "comp
 print(paste("Współczynnik korelacji Pearsona:", pearson_corr3))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = log_TotalIncome)) +
-  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+ggplot(dane, aes(x = Loan_Status, y = log_TotalIncome, fill = Loan_Status)) +
+  geom_jitter(aes(color = Loan_Status), width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  scale_fill_manual(values = c("No" = "#42cec2", "Yes" = "#002185")) + 
+  scale_color_manual(values = c("No" = "#002246", "Yes" = "#002246")) +
   labs(title = "Całkowite dochody w podziale na status kredytu",
        x = "Loan Status",
        y = "Total Income") +
@@ -284,7 +299,7 @@ boxplot(dane$log_DebtToIncomeRatio ~ dane$Loan_Status,
         main = "Rozkład współczynnika długu do przychodów według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Debt To Income Ratio",
-        col = c("lightblue", "lightgreen"),
+        col = c("#42cec2", "#002185"),
         notch = TRUE)
 
 # Obliczenie współczynnika korelacji Pearsona
@@ -292,9 +307,11 @@ pearson_corr3 <- cor(dane$Loan_Status_numeric, dane$log_DebtToIncomeRatio, use =
 print(paste("Współczynnik korelacji Pearsona:", pearson_corr3))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = log_DebtToIncomeRatio)) +
-  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+ggplot(dane, aes(x = Loan_Status, y = log_DebtToIncomeRatio, fill = Loan_Status)) +
+  geom_jitter(aes(color = Loan_Status), width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  scale_fill_manual(values = c("No" = "#42cec2", "Yes" = "#002185")) + 
+  scale_color_manual(values = c("No" = "#002246", "Yes" = "#002246")) +
   labs(title = "Współczynnik długu do przychodów w podziale na status kredytu",
        x = "Loan Status",
        y = "Debt To Income Ratio") +
@@ -310,25 +327,37 @@ boxplot(dane$Loan_Amount_Term ~ dane$Loan_Status,
         main = "Rozkład czasu trwania kredytu według statusu pożyczki",
         xlab = "Loan Status",
         ylab = "Applicant Income",
-        col = c("lightblue", "lightgreen"),
+        col = c("#42cec2", "#002185"),
         notch = TRUE)
 
 # Zamiana Loan_Status na wartości numeryczne
 dane$Loan_Status_numeric <- ifelse(dane$Loan_Status == "Yes", 1, 0)
 # Obliczenie współczynnika korelacji Pearsona
-pearson_corr1 <- cor(dane$Loan_Status_numeric, dane$Loan_Amount_Term, use = "complete.obs")
-print(paste("Współczynnik korelacji Pearsona:", pearson_corr1))
+pearson_corr4 <- cor(dane$Loan_Status_numeric, dane$Loan_Amount_Term, use = "complete.obs")
+print(paste("Współczynnik korelacji Pearsona:", pearson_corr4))
 
 # Wykres punktowy
-ggplot(dane, aes(x = Loan_Status, y = Loan_Amount_Term)) +
-  geom_jitter(width = 0.2, height = 0, alpha = 0.6) +
+ggplot(dane, aes(x = Loan_Status, y = Loan_Amount_Term, fill = Loan_Status)) +
+  geom_jitter(aes(color = Loan_Status), width = 0.2, height = 0, alpha = 0.6) +
   geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  scale_fill_manual(values = c("No" = "#42cec2", "Yes" = "#002185")) + 
+  scale_color_manual(values = c("No" = "#002246", "Yes" = "#002246")) +
   labs(title = "Czas trwania kredytu w podziale na status kredytu",
        x = "Loan Status",
        y = "Loan Amount Term") +
   theme_minimal()
 
 ```
+W ramach analizy dwuwymiarowej przeanalizowano zależności między zmiennymi, szczególną uwagę zwracając na zmienne o najwyższych współczynnikach korelacji oraz te, które mają istotne znaczenie dla analizy ryzyka kredytowego.
+
+Najwyższe wartości współczynnika korelacji zaobserwowano dla zmiennych:
+- Credit History – silnie skorelowana z przyznawalnością kredytu, co wskazuje na kluczową rolę historii kredytowej w procesie oceny wniosku. Klienci posiadający historię kredytową mają wyższe szanse na uzyskanie kredytu.
+- Loan Amount Term – długość okresu kredytowania wykazuje istotny związek z decyzją kredytową, najczęściej akceptowane są kreydyty zaciągane na okres 30 lat.
+- Property Area – obszar nieruchomości również wpływa na decyzję o przyznaniu kredytu. Najczęściej kredyty są akceptowane dla mieszkańców terenów podmiejskich, rzadziej dla mieszkańców miasta oras okolic wiejskich.
+
+W analizie, również ważnymi czynnikami są:
+- Total Income – łączny dochód wnioskodawcy odgrywa kluczową rolę w ocenie zdolności kredytowej. Wyższe dochody zwiększają prawdopodobieństwo uzyskania pozytywnej decyzji kredytowej.
+- Debt To Income Rate – wskaźnik zadłużenia w stosunku do dochodu jest istotnym miernikiem ryzyka. Wyższa wartość tego wskaźnika może sugerować większe obciążenie finansowe, co może negatywnie wpłynąć na decyzję kredytową.
 
 ## 3. Budowanie i testowanie hipotez
 
