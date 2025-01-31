@@ -2,8 +2,24 @@
 title: "Przygotowanie danych"
 author: "Czarnoksiężnicy z Oz"
 date: Opublikowane `r format(Sys.time(), "%A %d %B %Y")`
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
+
+```{r include=FALSE}
+# Biblioteki
+library(naniar)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+library(patchwork)
+library(editrules)
+
+```
+
 ## Wczytanie danych
+
 ```{r}
 dane <- read.csv("Hipoteczny.csv", header = TRUE)
 dane[dane == ""] <- NA
@@ -13,100 +29,211 @@ dane <- as.data.frame(dane)
 
 ```
 
+### Legenda
+
+| Zmienna w tabeli  | Opis zmiennej                              |
+|-------------------|--------------------------------------------|
+| Loan_ID           | ID aplikanta                               |
+| Gender            | Płeć                                       |
+| Married           | Stan cywilny                               |
+| Dependents        | Liczba osób zależnych finansowo            |
+| Education         | Poziom edukacji                            |
+| Self_Employed     | Samozatrudnienie                           |
+| ApplicantIncome   | Dochody aplikanta                          |
+| CoapplicantIncome | Dochody współaplikanta                     |
+| LoanAmount        | Kwota kredytu                              |
+| Loan_Amount_Term  | Okres kredytowania                         |
+| Credit_History    | Historia kredytowa                         |
+| Property_Area     | Położenie obiektu hipoteki                 |
+| LoanStatus        | Status kredytu                             |
+| TotalIncome       | Dochód całkowity                           |
+| DebtToIncomeRatio | Wskaźnik zadłużenia w stosunku do dochodów |
+
 ## 1. Identyfikacja brakujących danych
-### Autor: Dominika Szymczak
+
+Autor: Dominika Szymczak
 
 ### Sprawdzenie, które kolumny zawierają brakujące wartości
+
 ```{r}
-library(naniar)
-n_miss(dane) 
-n_complete(dane) 
-pct_miss(dane) 
-miss_var_summary(dane) 
+miss_summary <- tibble(
+  Metryka = c("Liczba braków", "Liczba pełnych wartości", "Procent braków"),
+  Wartość = c(n_miss(dane), n_complete(dane), pct_miss(dane))
+)
+kable(miss_summary, col.names = c("Metryka", "Wartość"), caption = "Podsumowanie brakujących wratości") 
+ 
 ```
 
-W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich rekordów. Występują one w kolumnach Credit_History (50), Self_Employed (32), LoanAmount (22), Dependents(15), Loan_Amount_Term (14), Gender(13) i Married(3). 
+```{r echo=FALSE}
+miss_var_summary(dane)
+
+```
+
+W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich
+rekordów. Występują one w kolumnach Historia kredytowa (50),
+Samozatrudnienie (32), Kwota kredytu (22), Liczba osób zależnych
+finansowo (15), Czas trwania kredytu (14), Płeć (13) i Stan cywilny (3).
 
 ### Wyliczenie procentu brakujących danych w każdej kolumnie
+
 ```{r}
 miss_case_table(dane)
 ```
 
-480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych rekordów). Stanowi to 78,18% wszystkich obserwacji.
+480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych
+rekordów). Stanowi to 78,18% wszystkich obserwacji.
 
 ### Wykonanie wizualizacji braków danych
+
 ```{r}
-vis_miss(dane, cluster = TRUE, sort_miss = TRUE) 
-gg_miss_fct(dane, fct=Self_Employed) 
+vis_miss(dane, cluster = TRUE, sort_miss = TRUE) +
+  labs(title = "Analiza brakujących danych")
+
+gg_miss_fct(dane, fct = Self_Employed) +
+  labs(title = "Braki danych względem samozatrudnienia",
+       x = "Samozatrudnienie", 
+       y = "zmienne", 
+       fill = "Procent braków") +
+  wykres_gr +
+  theme_minimal()
 ```
-Braki w Self_Employed mogą być efektem niepodania informacji przez aplikantów lub nieposiadania formalnego zatrudnienia.
 
-W LoanAmount mogże brakować danych z powodu problemów z wyceną wnioskowanej kwoty w momencie wypełniania wniosku internetowego.
+Braki w *Samozatrudnieniu* mogą być efektem niepodania informacji przez
+aplikantów lub nieposiadania formalnego zatrudnienia.
 
-Kolumna Credit_History ma największy odsetek braków w kategorii NA w Self_Employed. To znaczy, że brak danych w Self_Employed jest często powiązany z brakiem historii kredytowej.
+W kwocie kredytu może brakować danych z powodu problemów z wyceną
+wnioskowanej kwoty w momencie wypełniania wniosku internetowego.
+
+Kolumna *Historia kredytowa* ma największy odsetek braków w kategorii NA
+w *Samozatrudnieniu*. To znaczy, że ten brak danych jest często
+powiązany z brakiem historii kredytowej.
 
 ## 2. Analiza przyczyn braków
-### Autor: Julia Sowińska
+
+Autor: Julia Sowińska
 
 ### Analiza przecięć brakujących wartości
-```{r}
-gg_miss_upset(dane, nsets = 7)
-```
-Wykres potwierdza poprzednie wyniki o dominacji pojedynczych zbiorach braków. 
 
-Najwięcej braków danych jest w kolumnie Credit_History i są to braki pojedyncze, to znaczy, że z pośród wszystkich kolumn w 43 wierszach tylko kolumna Credit_History ma NA.
+```{r}
+?gg_miss_upset
+gg_miss_upset(dane, nsets = 7,
+              sets.bar.color = "#42cec2",
+              main.bar.color = "#0f225f")
+```
+
+Wykres potwierdza poprzednie wyniki o dominacji pojedynczych zbiorach
+braków.
+
+Najwięcej braków danych jest w kolumnie *Historia kredytowa* i są to
+braki pojedyncze, to znaczy, że z pośród wszystkich kolumn w 43
+wierszach tylko kolumna *Historia kredytowa* ma NA.
 
 ```{r}
 table(dane$Credit_History)
 table(dane$Self_Employed)
+
+kable(data.frame(
+  zmienna = c("Credit_History", "Self_Employment"),
+  No = c(89, 500),
+  Yes = c(475, 82)),
+  caption = "Tabela Historia kredytowa i Samozatrudnienie")
 ```
-Patrząc na rozkład wartości w kolumnie Credit_History oraz na liczbę brakujących wartości, nasuwa się założenie, że wartości brakujące mogą reprezentować kredytobiorców, którzy nie chcieli przyznawać się do braku historii kredytowej lub dla których bank napotkał problemy z pozyskaiem danych.
 
-Podobnie w przypadku braków w kolumnie Self_Employment - mogą one reprezentować kredytobiorców, którzy nie chcieli przyznawać się do samozatrudnienia lub uznali, że nie muszą oni wypełniać tej kolumny.
+Patrząc na rozkład wartości w kolumnie *Historia kredytowa* oraz na
+liczbę brakujących wartości, nasuwa się założenie, że wartości brakujące
+mogą reprezentować kredytobiorców, którzy nie chcieli przyznawać się do
+braku historii kredytowej lub dla których bank napotkał problemy z
+pozyskaiem danych.
 
-Tym samym, braki w tych dwóch zmiennych uznane zostają za MNAR (Missing Not at Random). 
+Podobnie w przypadku braków w kolumnie *Samozatrudnienie* - mogą one
+reprezentować kredytobiorców, którzy nie chcieli przyznawać się do
+samozatrudnienia lub uznali, że nie muszą oni wypełniać tej kolumny.
 
-Braki w kolumnie LoanAmount mogą reprezentować klientów, który złożyli wniosek kredytowy bez konkretnej kwoty, zakładając, że kwota zostanie ustalona podczas analizy. Co ciekawe spośród wierszy charakteryzujących się wartością NA w kolumnie LoanAmount równo połowa ma LoanStatus równy Y i połowa równu N.
+Tym samym, braki w tych dwóch zmiennych uznane zostają za MNAR (Missing
+Not at Random).
 
-Braki w kolumnie Loan_Amount_Term sytuacja może wyglądać podobnie - mogą to być klienci, którzy nie wypełnili wartości w kolumnie, zakładając domyślne ustawienia banku. Dlatego braki w kolumnach LoanAmount i Loan_Amount_Term również zostają uznane za potencjalne MNAR.
+Braki w kolumnie *Kwota kredytu* mogą reprezentować klientów, który
+złożyli wniosek kredytowy bez konkretnej kwoty, zakładając, że kwota
+zostanie ustalona podczas analizy. Co ciekawe, spośród wierszy
+charakteryzujących się wartością NA w kolumnie *Kwota kredytów* równo
+połowa ma *Status kredytu* równy Y i połowa równy N.
 
-Braki w kolumnie Gender mogą reprezentować osoby, które nie chciały podawać tej informacji, uznając, że płeć nie powinna mieć wpływu na decyzje kredytową. Braki w kolumnie Dependents mogą oznaczać świadome pominięcie pytania w obawie przed negatywnym wpływem odpowiedzi na zdolność kredytową lub po prostu z braku obowiązku. Dlatego braki tej zmiennej, braki zmiennej Married oraz braki zmiennej Gender zostają uznane za MNAR.
+Braki w kolumnie *Czas trwania kredytu* sytuacja może wyglądać
+podobnie - mogą to być klienci, którzy nie wypełnili wartości w
+kolumnie, zakładając domyślne ustawienia banku. Dlatego braki w
+kolumnach *Kwota kredytu* i *Czas trwania kredytu* również zostają
+uznane za potencjalne MNAR.
 
+Braki w kolumnie *Płeć* mogą reprezentować osoby, które nie chciały
+podawać tej informacji, uznając, że płeć nie powinna mieć wpływu na
+decyzje kredytową. Braki w kolumnie *Liczba osób zależnych finansowo*
+mogą oznaczać świadome pominięcie pytania w obawie przed negatywnym
+wpływem odpowiedzi na zdolność kredytową lub po prostu z braku
+obowiązku. Dlatego braki zmiennej *Stan cywilny* oraz braki zmiennej
+*Płeć* zostają uznane za MNAR.
 
-Wracając do wykresu przecięć wartości - Kombinacje z małą liczbą braków mogą być przypadkowe i niekoniecznie oznaczają zależności.
+Wracając do wykresu przecięć wartości - kombinacje z małą liczbą braków
+mogą być przypadkowe i niekoniecznie oznaczają zależności.
 
-Kombinacja między Self_Employment i Credit_History również występuje niewiele razy - 5. Jednak, jako że jest to najczęściej występująca kombinacja, zostanie ona rozważona jako potencjalny związek. 
-Może on być związany z obawą o negatywną ocenę zdolności kredytowej (jako że samozatrudnienie jest bardziej ryzykowne) i tym samym obawą o niższej kwocie kredytu lub wyższym oprocentowaniu. A także z trudnościami w uzyskaniu kredytów w przeszłości, co prowadzi do niekorzystnych danych w historii kredytowej.W takim wypadku, kredytobiorcy celowo nie podawaliby statusu samozatrudnienia i składaliby prośbę o wyższe kwoty kredytu, w nadziei, że bank uzna ich za zatrudnionych na pełen etat bez historii kredytowej.
+Kombinacja między *Samozatrudnienie* i *Historia kredytowa* również
+występuje niewiele razy - 5. Jednak, jako że jest to najczęściej
+występująca kombinacja, zostanie ona rozważona jako potencjalny związek.
+Może on być związany z obawą o negatywną ocenę zdolności kredytowej
+(jako że samozatrudnienie jest bardziej ryzykowne) i tym samym obawą o
+niższej kwocie kredytu lub wyższym oprocentowaniu. A także z
+trudnościami w uzyskaniu kredytów w przeszłości, co prowadzi do
+niekorzystnych danych w historii kredytowej. W takim wypadku,
+kredytobiorcy celowo nie podawaliby statusu samozatrudnienia i
+składaliby prośbę o wyższe kwoty kredytu, w nadziei, że bank uzna ich za
+zatrudnionych na pełen etat bez historii kredytowej.
 
 ### Analiza relacji brakujących wartości
+
 ```{r}
 library(ggplot2)
 ggplot(data = dane, aes(x = Credit_History, y = LoanAmount)) +
   geom_point() +
   geom_miss_point() +
-  scale_color_manual(values = c("deepskyblue3","mediumpurple2")) +
+  scale_color_manual(values = c("#42cec2","#002185")) +
   theme_minimal() +
   facet_wrap(~Self_Employed, scales = "free")
 ```
-Można zauważyć, że z pośród kredytobiorców z wartością NA w kolumnie Self_Employment oraz w kolumnie Credit_History, niemalże wszyscy (poza jednym przypadkiem z brakiem danych również w kolumnie LoanAmount) mają wartości w kolumnie LoanAmount powyżej 150, czyli większe niż w innych grupach.
 
-To może być argumentem za przyjęciem tezy, że osoby, które nie odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
+Można zauważyć, że z pośród kredytobiorców z wartością NA w kolumnie
+*Samozatrudnienie* oraz w kolumnie *Historia kredytowa*, niemalże
+wszyscy (poza jednym przypadkiem z brakiem danych również w kolumnie
+*Kwota kredytu*) mają wartości w kolumnie *Kwota kredytu* powyżej 150,
+czyli większe niż w innych grupach.
 
-
+To może być argumentem za przyjęciem tezy, że osoby, które nie
+odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
 
 ## 3. Uzupełnianie braków danych
-### Autor: Mikołaj Zalewski
+
+Autor: Mikołaj Zalewski
 
 ### Decyzja o strategii postępowania z brakującymi danymi
-Obseracje z brakiem danych w kolumnie Credit_History zastąpimy wartością 0 zgodnie z naszymi wcześniejszymi wnioskami.
-Obserwacje z brakiem danych w kolumnach Gender i Married zostaną zastąpione wartością "undefined", czyli po polsku "nieokreślone". Każdy wniosek o kredyt jest ważny, więc usuwanie obserwacji nie jest dobrym rozwiązaniem.
-Obserwacje z brakiem danych w kolumnie Dependents zostaną zastąpione wartością 0.
-Dla obserwacji z brakiem danych w kolumnie Loan_Amount_Term można przyjąć strategię inputacji wartością, która występuje w znaczącej większości obserwacji, czyli najpopularniejszym czasem, na jaki bierze się kredyt (czyli 360 dni).
-Obserwacje z brakiem danych w kolumnie Self_Employed zgodnie z naszą wcześniej opisaną tezą zamieniamy na wartość "Yes", czyli samozatrudnienie.
 
-Obserwacje z brakiem danych w kolumnie LoanAmount uzupełnione będą za pomocą techniki Hot Deck, w której brakująca wartość zastępowana wartością od klienta o najbardziej podobnych cechach. 
+Obseracje z brakiem danych w kolumnie *Historia kredytowa* zastąpimy
+wartością 0 zgodnie z naszymi wcześniejszymi wnioskami. Obserwacje z
+brakiem danych w kolumnach *Płeć* i *Stan cywilny* zostaną zastąpione
+wartością "undefined", czyli po polsku "nieokreślone". Każdy wniosek o
+kredyt jest ważny, więc usuwanie obserwacji nie jest dobrym
+rozwiązaniem. Obserwacje z brakiem danych w kolumnie *Liczba osób
+zależnych finansowo* zostaną zastąpione wartością 0. Dla obserwacji z
+brakiem danych w kolumnie *Czas trwania kredytu* można przyjąć strategię
+inputacji wartością, która występuje w znaczącej większości obserwacji,
+czyli najpopularniejszym czasem, na jaki bierze się kredyt (czyli 360
+dni). Obserwacje z brakiem danych w kolumnie *Samozatrudnienie* zgodnie
+z naszą wcześniej opisaną tezą zamieniamy na wartość "Yes", czyli
+potwierdzającą samozatrudnienie.
+
+Obserwacje z brakiem danych w kolumnie *Kwota kredytu* uzupełnione będą
+za pomocą techniki Hot Deck, w której brakująca wartość zastępowana
+będzie wartością od klienta o najbardziej podobnych cechach.
 
 ### Przeprowadzenie powyższej strategii
+
 ```{r}
 dane$Credit_History[is.na(dane$Credit_History)] <- 0
 dane$Gender[is.na(dane$Gender)] <- "Undefined"
@@ -120,23 +247,33 @@ dane <- dane %>% select(-LoanAmount_imp)
 ```
 
 ### Weryfikacja poprawności
+
 ```{r}
 n_miss(dane) 
 ```
 
-## 4. Identyfikacja i usunięcie nieprawidłowych wartości
-### Autor: Dominika Szymczak i Julia Sowińska
+W zbiorze danych nie występują już żadne puste wartości.
 
-Na tym etapie sprawdzić należy, czy nasz zbiór danych zawiera wartości logiczne. Wprowadzone zostają ograniczenia dla zmiennych:
-- ApplicantIncome powinna być większa lub równa 0
-- CoapplicantIncome powinna być większa lub równa 0
-- LoanAmount powinna być większa od 0
-- Loan_Amount_term powinna być większa od 0
-- Credit_History powinna być 0 lub 1
+## 4. Identyfikacja i usunięcie nieprawidłowych wartości
+
+Autor: Dominika Szymczak i Julia Sowińska
+
+Na tym etapie sprawdzić należy, czy nasz zbiór danych zawiera wartości
+logiczne. Wprowadzone zostają ograniczenia dla zmiennych:
+
+\- *Dochód aplikanta* powinna być większa lub równa 0
+
+\- *Dochód współaplikanta* powinna być większa lub równa 0
+
+\- *Kwota kredytu* powinna być większa od 0
+
+\- *Okres kredytowania* powinna być większa od 0
+
+\- *Historia kredytowa* powinna być 0 lub 1.
 
 ### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych) dla wartości numerycznych
+
 ```{r}
-library(editrules)
 ograniczenia <- editset(c("0 <= ApplicantIncome",
                           "0 <= CoapplicantIncome",
                           "0 < LoanAmount",
@@ -150,15 +287,27 @@ summary(violatedEdits(ograniczenia, dane))
 table(dane$Credit_History) 
 
 ```
-Dla danych numerycznych wprowadzone zostały ograniczenia:
-- dla zmiennej ApplicantIncome wartości nie mogą być mniejsze niż 0
-- dla zmiennej CoapplicantIncome wartości nie mogą być mniejsze niż 0
-- dla zmiennej LoanAmount wartości nie mogą być mniejsze lub równe 0
-- dla zmiennej Loan_Amount_Term wartości nie mogą być mniejsze niż 0
 
-Dla rekordów, których wartości nie spełniały ograniczeń przypisane powinny zostać wartości NA. Jednak w tym przypadku, wszystkie wartości zmiennych spełniały założone ograniczenia i nie ma potrzeby przeprowadzenia dalszego przekształacania tych danych.
+Dla danych numerycznych wprowadzone zostały ograniczenia:
+
+\- dla zmiennej *Dochód aplikanta* wartości nie mogą być mniejsze niż 0
+
+\- dla zmiennej *Dochód współaplikanta* wartości nie mogą być mniejsze
+niż 0
+
+\- dla zmiennej *Wartość kredytu* wartości nie mogą być mniejsze lub
+równe 0
+
+\- dla zmiennej *Okres kredytowania* wartości nie mogą być mniejsze niż
+0
+
+Dla rekordów, których wartości nie spełniały ograniczeń przypisane
+powinny zostać wartości NA. Jednak w tym przypadku, wszystkie wartości
+zmiennych spełniały założone ograniczenia i nie ma potrzeby
+przeprowadzenia dalszego przekształacania tych danych.
 
 ### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych) dla wartości tekstowych
+
 ```{r}
 dane <- dane %>% mutate(
   Gender = factor(dane$Gender,
@@ -195,62 +344,13 @@ table(dane$Loan_Amount_Term)
 table(dane$Property_Area) 
 table(dane$Loan_Status) 
 ```
-Dla danych tekstowych, tak jak dla danych numerycznych nie znlaeziono żadnych odstających od założeń wartości i nie ma potrzeby przeprowadzenia dalszego przekształacania tych danych.
+
+Dla danych tekstowych, tak jak dla danych numerycznych nie znaleziono
+żadnych odstających od założeń wartości i nie ma potrzeby
+przeprowadzenia dalszego przekształacania tych danych.
 
 ### Sprawdzenie rozkładów zmiennych i ich statystyki opisowe
-```{r}
-library(ggplot2)
-library(patchwork)
 
-summary(dane)
-
-plot_Gender <- ggplot(dane, aes(x = as.factor(Gender))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Gender", x = "Gender", y = "Liczność")
-plot_Married <- ggplot(dane, aes(x = as.factor(Married))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Married", x = "Married", y = "Liczność")
-plot_Dependents <- ggplot(dane, aes(x = as.factor(Dependents))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Dependents", x = "Dependents", y = "Liczność")
-plot_Education <- ggplot(dane, aes(x = as.factor(Education))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Education", x = "Education", y = "Liczność")
-plot_Self_Employed <- ggplot(dane, aes(x = as.factor(Self_Employed))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Self_Employed", x = "Self_Employed", y = "Liczność")
-plot_Loan_Amount_Term <- ggplot(dane, aes(x = Loan_Amount_Term)) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Loan_Amount_Term", x = "Loan_Amount_Term", y = "Liczność")
-plot_Credit_History <- ggplot(dane, aes(x = as.factor(Credit_History))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Credit_History", x = "Credit_History", y = "Liczność")
-plot_Property_Area <- ggplot(dane, aes(x = as.factor(Property_Area))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Property_Area", x = "Property_Area", y = "Liczność")
-plot_Loan_Status <- ggplot(dane, aes(x = as.factor(Loan_Status))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Rozkład Loan_Status", x = "Loan_Status", y = "Liczność")
-
-plot_ApplicantIncome <- ggplot(dane, aes(x = ApplicantIncome)) +
-  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
-  labs(title = "Rozkład ApplicantIncome", x = "ApplicantIncome", y = "Częstotliwość")
-plot_CoapplicantIncome <- ggplot(dane, aes(x = CoapplicantIncome)) +
-  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
-  labs(title = "Rozkład CoapplicantIncome", x = "CoapplicantIncome", y = "Częstotliwość")
-plot_LoanAmount <- ggplot(dane, aes(x = LoanAmount)) +
-  geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
-  labs(title = "Rozkład LoanAmount", x = "LoanAmount", y = "Częstotliwość")
-
-
-combined_plots_charcter <- plot_Gender + plot_Married + plot_Dependents + plot_Education + plot_Self_Employed + plot_Loan_Amount_Term + plot_Credit_History + plot_Property_Area + plot_Loan_Status
-
-combined_plots_numeric <- plot_ApplicantIncome + plot_CoapplicantIncome + plot_LoanAmount
-
-combined_plots_charcter
-combined_plots_numeric
-
-```
 ```{r}
 plot_variables <- list(
   "Gender" = "Rozkład Gender",
@@ -266,33 +366,66 @@ plot_variables <- list(
 
 plot_list <- lapply(names(plot_variables), function(var) {
   ggplot(dane, aes_string(x = var)) +
-    geom_bar(fill = "skyblue") +
+    geom_bar(fill = "#306591") +
     labs(title = plot_variables[[var]], x = var, y = "Liczność")
 })
 
 num_plot_vars <- c("ApplicantIncome", "CoapplicantIncome", "LoanAmount")
 num_plot_list <- lapply(num_plot_vars, function(var) {
   ggplot(dane, aes_string(x = var)) +
-    geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+    geom_histogram(fill = "#306591", color = "#0f225f", bins = 30) +
     labs(title = paste("Rozkład", var), x = var, y = "Częstotliwość")
 })
 
 combined_plots <- c(plot_list, num_plot_list) %>%
   do.call(cowplot::plot_grid, .)
-combined_plots
+
+library(cowplot)
+plot_grid(
+  ggdraw() + draw_label("Rozkłady zmiennych", fontface = "bold", size = 14, hjust = 0.5),
+  combined_plots,
+  ncol = 1,
+  rel_heights = c(0.1, 1))
+
 ```
 
-W zmiennej Gender dominującą kategorią są mężczyźni (489 przypadków), natomiast kobiet jest 112, a w 13 przypadkach płeć nie została określona. W odniesieniu do zmiennej Married, większość osób to osoby w związku małżeńskim (398), podczas gdy niezamężnych jest 213, a 3 przypadki pozostają niezdefiniowane.
+W zmiennej *Płeć* dominującą kategorią są mężczyźni (489 przypadków),
+natomiast kobiet jest 112, a w 13 przypadkach płeć nie została
+określona. W odniesieniu do zmiennej *Stan cywilny*, większość osób to
+osoby w związku małżeńskim (398), podczas gdy niezamężnych jest 213, a 3
+przypadki pozostają niezdefiniowane.
 
-Zmienna Dependents, określająca liczbę osób na utrzymaniu, wskazuje, że najwięcej respondentów (360) nie posiada osób na utrzymaniu, 102 osoby deklarują jedną osobę na utrzymaniu, 101 osób dwie, a 51 osób trzy lub więcej. W odniesieniu do zmiennej Education, większość osób posiada wykształcenie wyższe (480), a 134 osoby mają niższy poziom wykształcenia.
+Zmienna *Liczba osób zależnych finansowo* wskazuje, że najwięcej
+respondentów (360) nie posiada osób na utrzymaniu, 102 osoby deklarują
+jedną osobę na utrzymaniu, 101 osób dwie, a 51 osób trzy lub więcej. W
+odniesieniu do zmiennej *Poziom edukacji*, większość osób posiada
+wykształcenie wyższe (480), a 134 osoby mają niższy poziom
+wykształcenia.
 
-W przypadku zmiennej Self_Employed, 500 osób zadeklarowało, że nie prowadzi działalności gospodarczej, a 114 osób to osoby samozatrudnione. Zmienna ApplicantIncome, opisująca dochód głównego wnioskodawcy, wskazuje na wartości od 150 do 81 000, przy czym mediana wynosi 3812, a średnia 5403, co wskazuje na obecność wartości odstających. Dochód współwnioskodawcy (CoapplicantIncome) jest w wielu przypadkach równy 0 (25. percentyl to 0), co oznacza, że wiele osób nie posiada współwnioskodawcy. Mediana wynosi 1188, średnia to 1621, a maksymalna wartość wynosi 41 667.
+W przypadku zmiennej *Samozatrudneinie*, 500 osób zadeklarowało, że nie
+prowadzi działalności gospodarczej, a 114 osób to osoby samozatrudnione.
+Zmienna *Dochód aplikanta*, opisująca dochód głównego wnioskodawcy,
+wskazuje na wartości od 150 do 81 000, przy czym mediana wynosi 3812, a
+średnia 5403, co wskazuje na obecność wartości odstających. *Dochód
+współaplikanta* jest w wielu przypadkach równy 0 (25. percentyl to 0),
+co oznacza, że wiele osób nie posiada współwnioskodawcy. Mediana wynosi
+1188, średnia to 1621, a maksymalna wartość wynosi 41 667.
 
-Zmienna LoanAmount, określająca kwotę pożyczki, ma wartości od 9 do 700, przy medianie 128 i średniej 145,8, co również sugeruje obecność wartości odstających. Loan_Amount_Term, opisująca czas spłaty pożyczki w miesiącach, waha się od 12 do 480 miesięcy, z medianą 360 miesięcy (30 lat).
- 
-Historia kredytowa (Credit_History) wskazuje, że większość wnioskodawców (około 77,4%) posiada pozytywną historię kredytową (wartość 1). Rozkład zmiennej Property_Area, opisującej obszar zamieszkania, pokazuje, że 179 osób mieszka na terenach wiejskich, 233 w obszarach półmiejskich, a 202 w miastach. Zmienna Loan_Status, opisująca status wniosku o pożyczkę, wskazuje, że większość wniosków (422) została zatwierdzona, a 192 odrzucono.
+Zmienna *Kwota kredytu*, określająca kwotę pożyczki, ma wartości od 9 do
+700, przy medianie 128 i średniej 145,8, co również sugeruje obecność
+wartości odstających. *Okres kredytowania*, opisujący czas spłaty
+pożyczki w miesiącach, waha się od 12 do 480 miesięcy, z medianą 360
+miesięcy (30 lat).
+
+*Historia kredytowa* wskazuje, że większość wnioskodawców (około 77,4%)
+posiada pozytywną historię kredytową (wartość 1). Rozkład zmiennej
+*Położenie obiektu hipoteki* pokazuje, że 179 obiektów znajduje się na
+terenach wiejskich, 233 w obszarach półmiejskich, a 202 w miastach.
+Zmienna *Status kredytu*, opisująca status wniosku o pożyczkę, wskazuje,
+że większość wniosków (422) została zatwierdzona, a 192 odrzucono.
 
 ### Wykrycie i usunięcie/przekształcenie wartości odstających
+
 ```{r}
 library(dplyr)
 
@@ -337,14 +470,36 @@ common_outliers_ApplicantIncome
 common_outliers_CoapplicantIncome
 common_outliers_LoanAmount
 ```
-W celu wykrycia wartości odstających posłużono się kombinacją dwóch metod - metody Z-score (gdzie wartość jest odstająca, jeśli jej odległość od średniej w jednostkach odchylenia standardowego jest większa niż 3 lub mniejsza niż -3) oraz metoda IQR (gdzie wartość jest odstająca, jeśli znajduje się poniżej dolnej granicY Q1−1.5×IQR lub powyżej górnej granicy Q3+1.5×IQR). Aby porównać wyniki obu metod, wybraliśmy te wiersze, które zostały uznane za wartości odstające zarówno przez metodę Z-score, jak i przez metodę IQR. 
 
-W ten sposób doszliśmy do wniosków: 
-- zmienna ApplicantIncome ma 8 wartości odstających, które jednak reprezentują sobą osoby o bardzo wysokich dochodach (które mogłyby być wartościowymi kredytobiorcami) - dlatego postanowiliśmy pozostawić te wartości bez zmian;
-- zmienna CoapplicantIncome ma 6 wartości odstających, które reprezentują sobą osoby, których współkredytobiorca ma wysokie dochody (dochody te jednak mieszczą się w większości w średniej wartości zmiennej ApplicantIncome) - dlatego te wartości też postanowiliśmy pozostawić bez zmian;
-- zmienna LoanAmount ma 15 wartości odstających, które jednak reprezentują sobą osoby składające wnioski o najwyższe kwoty kredytu (które różnież mogłyby być wartościowymi klientami firmy) - dlatego te wartości także postanowiliśmy pozostawić bez zmian.
+W celu wykrycia wartości odstających posłużono się kombinacją dwóch
+metod - metody Z-score (gdzie wartość jest odstająca, jeśli jej
+odległość od średniej w jednostkach odchylenia standardowego jest
+większa niż 3 lub mniejsza niż -3) oraz metoda IQR (gdzie wartość jest
+odstająca, jeśli znajduje się poniżej dolnej granicY Q1−1.5×IQR lub
+powyżej górnej granicy Q3+1.5×IQR). Aby porównać wyniki obu metod,
+wybraliśmy te wiersze, które zostały uznane za wartości odstające
+zarówno przez metodę Z-score, jak i przez metodę IQR.
+
+W ten sposób doszliśmy do wniosków:
+
+\- zmienna *Dochód aplikanta* ma 8 wartości odstających, które jednak
+reprezentują sobą osoby o bardzo wysokich dochodach (które mogłyby być
+wartościowymi kredytobiorcami) - dlatego postanowiliśmy pozostawić te
+wartości bez zmian;
+
+\- zmienna *Dochód współaplikanta* ma 6 wartości odstających, które
+reprezentują sobą osoby, których współkredytobiorca ma wysokie dochody
+(dochody te jednak mieszczą się w większości w średniej wartości
+zmiennej *Dochód aplikanta*) - dlatego te wartości też postanowiliśmy
+pozostawić bez zmian;
+
+\- zmienna *Kwota kredytu* ma 15 wartości odstających, które jednak
+reprezentują sobą osoby składające wnioski o najwyższe kwoty kredytu
+(które różnież mogłyby być wartościowymi klientami firmy) - dlatego te
+wartości także postanowiliśmy pozostawić bez zmian.
 
 ### Niezbędne przekształcenia log-transform
+
 ```{r}
 dane <- dane %>%
   mutate(
@@ -355,7 +510,7 @@ dane <- dane %>%
 log_plot_vars <- c("log_ApplicantIncome", "log_CoapplicantIncome", "log_LoanAmount")
 log_plot_list <- lapply(log_plot_vars, function(var) {
   ggplot(dane, aes_string(x = var)) +
-    geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+    geom_histogram(fill = "#306591", color = "#0f225f", bins = 30) +
     labs(title = paste("Rozkład", var), x = var, y = "Częstotliwość")
 })
 
@@ -364,22 +519,44 @@ combined_plots <- log_plot_list %>%
 combined_plots
 ```
 
-Ze względu na dużą skośność w rozkładach zmiennych ApplicantIncome, CoapplicantIncome i LoanAmout postanowiono wprowadzić także zmienne reprezentujące ich log-transformację. Ze względu na możliwe zera w tych kolumnach zdecydowaliśmy się na funkcję log1p() zamiast log() (log(0) jest niezdefiniowane). Na wykresach przedstawiających rozkłady tych zlogarytmowanych zmiennych, można zauważyć, że po transformacji rozkłady te zbliżyły się zdecydowanie do rozkładu normalnego. Jedynie w przypadku zmiennej log_CoapplicantIncome można nadal zauważyć dość dużą skośność, spowodowaną dużą liczbą ludzi składających wniosek o kredyt samodzielnie lub wraz z współkredytobiorcą bez dochodów.
+Ze względu na dużą skośność w rozkładach zmiennych *Dochód aplikanta,
+Dochód współaplikanta* i *Kwota kredytu* postanowiono wprowadzić także
+zmienne reprezentujące ich log-transformację. Ze względu na możliwe zera
+w tych kolumnach, zdecydowaliśmy się na funkcję log1p() zamiast log()
+(log(0) jest niezdefiniowane). Na wykresach przedstawiających rozkłady
+tych zlogarytmowanych zmiennych, można zauważyć, że po transformacji
+rozkłady te zbliżyły się zdecydowanie do rozkładu normalnego. Jedynie w
+przypadku zmiennej log_CoapplicantIncome (*zlogarytmowany Dochód
+współaplikanta*) można nadal zauważyć dość dużą skośność, spowodowaną
+dużą liczbą ludzi składających wniosek o kredyt samodzielnie, lub wraz z
+współkredytobiorcą bez dochodów.
 
 ## 5. Wzbogacenie danych i finalna weryfikacja
-### Autor: Mikołaj Zalewski
+
+Autor: Mikołaj Zalewski
 
 ### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne) i sprawdzenie ich rozkładów oraz statystyk opisowych
+
+Stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego
+się o kredyt
+
 ```{r}
-View(dane)
-dane$TotalIncome <- dane$ApplicantIncome + dane$CoapplicantIncome ## stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego się o kredyt
+dane$TotalIncome <- dane$ApplicantIncome + dane$CoapplicantIncome
 head(dane)
-dane$DebtToIncomeRatio <-dane$LoanAmount / dane$TotalIncome ## stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa domowego
+
+```
+
+Stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa
+domowego
+
+```{r}
+dane$DebtToIncomeRatio <-dane$LoanAmount / dane$TotalIncome
 head(dane)
 
 ```
 
 ### Analiza warości odstających oraz potencjalnej konieczności log-transform nowych zmiennych
+
 ```{r}
 z_score <- function(x) {
   (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
@@ -412,10 +589,16 @@ common_outliers_DebtToIncomeRatio <- intersect(
 
 common_outliers_TotalIncome
 common_outliers_DebtToIncomeRatio
-## Zmienna totalIncome ma 10 wartości odstających, jednakże tak samo jak w przypadku zmiennych 
-## ApplicantIncome oraz CoapplicantIncome są to osoby z wysokimi zarobkami więc postanwoiliśmy zostawić je bez zmian
+```
 
-## przekształcenie danych log transform
+Zmienna *Dochód całkowity* ma 10 wartości odstających, jednakże tak samo
+jak w przypadku zmiennych *Dochód aplikanta* oraz *Dochód
+współaplikanta*, są to osoby z wysokimi zarobkami więc postanwoiliśmy
+zostawić je bez zmian.
+
+Przekształcenie danych log transform
+
+```{r}
 dane <- dane %>%
   mutate(
     log_TotalIncome = log1p(TotalIncome),
@@ -425,7 +608,7 @@ dane <- dane %>%
 log_plot_vars <- c("TotalIncome", "DebtToIncomeRatio")
 log_plot_list <- lapply(log_plot_vars, function(var) {
   ggplot(dane, aes_string(x = var)) +
-    geom_histogram(fill = "skyblue", color = "skyblue3", bins = 30) +
+    geom_histogram(fill = "#306591", color = "#0f225f", bins = 30) +
     labs(title = paste("Rozkład", var), x = var, y = "Częstotliwość")
 })
 
@@ -435,8 +618,10 @@ combined_plots
 ```
 
 ### Zapisanie przygotowanych danych do nowego pliku csv
+
 ```{r}
 dane
 write.csv(dane, "DanePoprawione.csv", row.names = FALSE)
 ```
 
+:::
