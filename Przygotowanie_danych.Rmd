@@ -12,22 +12,24 @@ editor_options:
 library(naniar)
 library(dplyr)
 library(knitr)
+library(kableExtra)
 library(ggplot2)
 library(patchwork)
 library(editrules)
-
+library(VIM)
 ```
 
 ## Wczytanie danych
 
-```{r}
+```{r warning=FALSE}
 dane <- read.csv("Hipoteczny.csv", header = TRUE)
 dane[dane == ""] <- NA
-View(dane)
-
 dane <- as.data.frame(dane)
-
+kable(head(dane, 10), caption = "Dane") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
+
+------------------------------------------------------------------------
 
 ### Legenda
 
@@ -49,35 +51,49 @@ dane <- as.data.frame(dane)
 | TotalIncome       | Dochód całkowity                           |
 | DebtToIncomeRatio | Wskaźnik zadłużenia w stosunku do dochodów |
 
+------------------------------------------------------------------------
+
+## WSTĘP
+
+WSTĘP
+
+------------------------------------------------------------------------
+
+# PRZYGOTOWANIE DANYCH
+
 ## 1. Identyfikacja brakujących danych
 
 Autor: Dominika Szymczak
 
 ### Sprawdzenie, które kolumny zawierają brakujące wartości
 
-```{r}
+```{r warning=FALSE}
 miss_summary <- tibble(
   Metryka = c("Liczba braków", "Liczba pełnych wartości", "Procent braków"),
   Wartość = c(n_miss(dane), n_complete(dane), pct_miss(dane))
 )
-kable(miss_summary, col.names = c("Metryka", "Wartość"), caption = "Podsumowanie brakujących wratości") 
- 
+kable(miss_summary, col.names = c("Metryka", "Wartość"), caption = "Podsumowanie brakujących wratości") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-```{r echo=FALSE}
-miss_var_summary(dane)
+```{r echo=FALSE, warning=FALSE}
+kable(miss_var_summary(dane), caption = "Podsumowanie brakujących wratości") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 ```
 
 W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich
-rekordów. Występują one w kolumnach Historia kredytowa (50),
-Samozatrudnienie (32), Kwota kredytu (22), Liczba osób zależnych
-finansowo (15), Czas trwania kredytu (14), Płeć (13) i Stan cywilny (3).
+rekordów. Występują one w kolumnach *Historia kredytowa* (50),
+*Samozatrudnienie* (32), *Kwota kredytu* (22), *Liczba osób zależnych
+finansowo* 15), *Czas trwania kredytu* (14), *Płeć* (13) i *Stan
+cywilny* (3).
 
 ### Wyliczenie procentu brakujących danych w każdej kolumnie
 
-```{r}
-miss_case_table(dane)
+```{r warning=FALSE}
+kable(miss_case_table(dane), caption = "Podsumowanie liczby brakujących wratości w rekordach") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
 ```
 
 480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych
@@ -85,15 +101,14 @@ rekordów). Stanowi to 78,18% wszystkich obserwacji.
 
 ### Wykonanie wizualizacji braków danych
 
-```{r}
+```{r message = FALSE}
 vis_miss(dane, cluster = TRUE, sort_miss = TRUE) +
   labs(title = "Analiza brakujących danych")
 
 gg_miss_fct(dane, fct = Self_Employed) +
   labs(title = "Braki danych względem samozatrudnienia",
        x = "Samozatrudnienie", 
-       y = "zmienne", 
-       fill = "Procent braków") +
+       y = "zmienne") +
   wykres_gr +
   theme_minimal()
 ```
@@ -108,6 +123,8 @@ Kolumna *Historia kredytowa* ma największy odsetek braków w kategorii NA
 w *Samozatrudnieniu*. To znaczy, że ten brak danych jest często
 powiązany z brakiem historii kredytowej.
 
+------------------------------------------------------------------------
+
 ## 2. Analiza przyczyn braków
 
 Autor: Julia Sowińska
@@ -115,7 +132,6 @@ Autor: Julia Sowińska
 ### Analiza przecięć brakujących wartości
 
 ```{r}
-?gg_miss_upset
 gg_miss_upset(dane, nsets = 7,
               sets.bar.color = "#42cec2",
               main.bar.color = "#0f225f")
@@ -128,15 +144,13 @@ Najwięcej braków danych jest w kolumnie *Historia kredytowa* i są to
 braki pojedyncze, to znaczy, że z pośród wszystkich kolumn w 43
 wierszach tylko kolumna *Historia kredytowa* ma NA.
 
-```{r}
-table(dane$Credit_History)
-table(dane$Self_Employed)
-
+```{r warning=FALSE}
 kable(data.frame(
   zmienna = c("Credit_History", "Self_Employment"),
   No = c(89, 500),
   Yes = c(475, 82)),
-  caption = "Tabela Historia kredytowa i Samozatrudnienie")
+  caption = "Tabela Historia kredytowa i Samozatrudnienie") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 Patrząc na rozkład wartości w kolumnie *Historia kredytowa* oraz na
@@ -189,8 +203,7 @@ zatrudnionych na pełen etat bez historii kredytowej.
 
 ### Analiza relacji brakujących wartości
 
-```{r}
-library(ggplot2)
+```{r warning=FALSE}
 ggplot(data = dane, aes(x = Credit_History, y = LoanAmount)) +
   geom_point() +
   geom_miss_point() +
@@ -207,6 +220,8 @@ czyli większe niż w innych grupach.
 
 To może być argumentem za przyjęciem tezy, że osoby, które nie
 odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
+
+------------------------------------------------------------------------
 
 ## 3. Uzupełnianie braków danych
 
@@ -241,7 +256,6 @@ dane$Married[is.na(dane$Married)] <- "Undefined"
 dane$Dependents[is.na(dane$Dependents)] <- 0
 dane$Loan_Amount_Term[is.na(dane$Loan_Amount_Term)] <- 360
 dane$Self_Employed[is.na(dane$Self_Employed)] <- "Yes"
-library(VIM)
 dane <- hotdeck(dane, variable = "LoanAmount")
 dane <- dane %>% select(-LoanAmount_imp)
 ```
@@ -253,6 +267,8 @@ n_miss(dane)
 ```
 
 W zbiorze danych nie występują już żadne puste wartości.
+
+------------------------------------------------------------------------
 
 ## 4. Identyfikacja i usunięcie nieprawidłowych wartości
 
@@ -284,7 +300,6 @@ dane$Credit_History <- factor(dane$Credit_History,
                                labels = c("Not existing", "Existing"))
 
 summary(violatedEdits(ograniczenia, dane))
-table(dane$Credit_History) 
 
 ```
 
@@ -308,7 +323,7 @@ przeprowadzenia dalszego przekształacania tych danych.
 
 ### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych) dla wartości tekstowych
 
-```{r}
+```{r warning=FALSE}
 dane <- dane %>% mutate(
   Gender = factor(dane$Gender,
                       levels = c("Male", "Female", "Undefined"),
@@ -335,14 +350,23 @@ dane <- dane %>% mutate(
                            levels = c("N", "Y"),
                            labels = c("No", "Yes")))
 
-table(dane$Gender) 
-table(dane$Married) 
-table(dane$Dependents) 
-table(dane$Education) 
-table(dane$Self_Employed) 
-table(dane$Loan_Amount_Term) 
-table(dane$Property_Area) 
-table(dane$Loan_Status) 
+kable(table(dane$Gender), caption = "Tabela częstości płci", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) 
+kable(table(dane$Married), caption = "Tabela częstości stanu cywilnego", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(table(dane$Dependents), caption = "Tabela częstości liczby osób zależnych finansowo", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(table(dane$Education), caption = "Tabela częstości poziomu edukacji", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(table(dane$Self_Employed), caption = "Tabela częstości samozatrudnienia", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(table(dane$Loan_Amount_Term), caption = "Tabela częstości okresu kredytowania", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(table(dane$Property_Area), caption = "Tabela częstości położenia obiektu hipoteki", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(table(dane$Loan_Status), caption = "Tabela częstości statusu kredytu", col.names = c("Kategoria", "Częstość")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
 ```
 
 Dla danych tekstowych, tak jak dla danych numerycznych nie znaleziono
@@ -426,9 +450,12 @@ Zmienna *Status kredytu*, opisująca status wniosku o pożyczkę, wskazuje,
 
 ### Wykrycie i usunięcie/przekształcenie wartości odstających
 
-```{r}
-library(dplyr)
+kable(common_outliers_LoanAmount, caption = "Wartości odstające kwot
+kredytów") %\>%
 
+kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+```{r message=FALSE, warning=FALSE}
 z_score <- function(x) {
   (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
 }
@@ -466,9 +493,11 @@ common_outliers_CoapplicantIncome <- inner_join(
 common_outliers_LoanAmount <- inner_join(
   z_outliers_LoanAmount, iqr_outliers_LoanAmount)
 
-common_outliers_ApplicantIncome
-common_outliers_CoapplicantIncome
-common_outliers_LoanAmount
+kable(common_outliers_ApplicantIncome, caption = "Wartości odstające dochodów aplikantów") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(common_outliers_CoapplicantIncome, caption = "Wartości odstające dochodów współaplikantów") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
 ```
 
 W celu wykrycia wartości odstających posłużono się kombinacją dwóch
@@ -531,33 +560,36 @@ współaplikanta*) można nadal zauważyć dość dużą skośność, spowodowan
 dużą liczbą ludzi składających wniosek o kredyt samodzielnie, lub wraz z
 współkredytobiorcą bez dochodów.
 
+------------------------------------------------------------------------
+
 ## 5. Wzbogacenie danych i finalna weryfikacja
 
 Autor: Mikołaj Zalewski
 
-### Dodanie nowych zmiennych (według mnie total_Income, może też debt_to_income_ratio lub inne) i sprawdzenie ich rozkładów oraz statystyk opisowych
+### Dodanie nowych zmiennych i sprawdzenie ich rozkładów oraz statystyk opisowych
 
 Stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego
 się o kredyt
 
-```{r}
+```{r warning=FALSE}
 dane$TotalIncome <- dane$ApplicantIncome + dane$CoapplicantIncome
-head(dane)
-
+kable(head(dane), caption = "Nowostworzona zmienna dochodu całkowitego") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 Stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa
 domowego
 
-```{r}
+```{r warning=FALSE}
 dane$DebtToIncomeRatio <-dane$LoanAmount / dane$TotalIncome
-head(dane)
+kable(head(dane), caption = "Nowostworzona zmienna wskaźnika zadłużenia w stosunku do dochodu całkowitego") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
 ```
 
 ### Analiza warości odstających oraz potencjalnej konieczności log-transform nowych zmiennych
 
-```{r}
+```{r warning=FALSE}
 z_score <- function(x) {
   (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
 }
@@ -587,8 +619,10 @@ common_outliers_TotalIncome <- intersect(
 common_outliers_DebtToIncomeRatio <- intersect(
   z_outliers_DebtToIncomeRatio, iqr_outliers_DebtToIncomeRatio)
 
-common_outliers_TotalIncome
-common_outliers_DebtToIncomeRatio
+kable(common_outliers_TotalIncome, caption = "Wartości odstające dochodu całkowitego") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+kable(common_outliers_DebtToIncomeRatio, caption = "Wartości odstające wskaźnika zadłużenia w stosunku do dochodu") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 Zmienna *Dochód całkowity* ma 10 wartości odstających, jednakże tak samo
@@ -596,7 +630,12 @@ jak w przypadku zmiennych *Dochód aplikanta* oraz *Dochód
 współaplikanta*, są to osoby z wysokimi zarobkami więc postanwoiliśmy
 zostawić je bez zmian.
 
-Przekształcenie danych log transform
+Zmienna *Wskaźnik zadłużenia w stosunku do dochodu* ma 8 wartości
+odstających, które jednak także zdecydowano pozostawić bez zmian ze
+względu na obawę utraty cennych informacji dotyczących podejmowania
+decyzji o przyznaniu kredytu.
+
+### Przekształcenie danych log transform
 
 ```{r}
 dane <- dane %>%
