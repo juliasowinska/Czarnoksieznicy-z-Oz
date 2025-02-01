@@ -25,6 +25,7 @@ library(rpart)
 library(rpart.plot)
 library(colorspace)
 library(gridExtra)
+library(cowplot)
 ```
 
 ## Wczytanie danych
@@ -65,7 +66,23 @@ kable(head(dane, 10), caption = "Dane") %>%
 
 Autor: Dominika Szymczak
 
-WSTĘP
+Niniejszy raport jest projektem zaliczeniowym przedmiotu Analiza Danych
+dla kierunku Analityka Gospodarcza II na Politechnice Gdańskiej.
+Autorami są: Julia Sowińska, Dominika Szymczak oraz Mikołaj Zalewski.
+
+Celem projektu jest identyfikacja kluczowych czynników wpływających na
+zatwierdzenie kredytu mieszkaniowego, analiza procesu jego zatwierdzania
+oraz opracowanie modelu predykcyjnego wspierającego automatyczne
+podejmowanie decyzji w oparciu o dane klienta.
+
+Otrzymane dane obejmują cechy wnioskodawców, takie jak płeć, poziom
+edukacji, dochody, historia kredytowa, parametry kredytu oraz inne.
+Analiza obejmuje eksplorację danych oraz ich wyczyszczenie i
+przygotowanie do analizy, identyfikację kluczowych zależności i
+segmentację klientów. Na tej podstawie zostanie zbudowany model
+predykcyjny usprawniający proces przyznawania kredytów, który
+minimalizuje ryzyko ich udzielania klientom o niskiej zdolności
+kredytowej.
 
 ------------------------------------------------------------------------
 
@@ -114,6 +131,8 @@ rekordów). Stanowi to 78,18% wszystkich obserwacji.
 ```{r message = FALSE}
 vis_miss(dane, cluster = TRUE, sort_miss = TRUE) +
   labs(title = "Analiza brakujących danych")
+
+wykres_gr <- scale_fill_gradientn(colors = c("#42cec2", "#306591", "#002185", "#0f225f", "#142c45"))
 
 gg_miss_fct(dane, fct = Self_Employed) +
   labs(title = "Braki danych względem samozatrudnienia",
@@ -219,6 +238,7 @@ ggplot(data = dane, aes(x = Credit_History, y = LoanAmount)) +
   geom_miss_point() +
   scale_color_manual(values = c("#42cec2","#002185")) +
   theme_minimal() +
+  labs(x = "Historia kredytowa", y = "Kwota kredytu") +
   facet_wrap(~Self_Employed, scales = "free")
 ```
 
@@ -414,7 +434,6 @@ num_plot_list <- lapply(num_plot_vars, function(var) {
 combined_plots <- c(plot_list, num_plot_list) %>%
   do.call(cowplot::plot_grid, .)
 
-library(cowplot)
 plot_grid(
   ggdraw() + draw_label("Rozkłady zmiennych", fontface = "bold", size = 14, hjust = 0.5),
   combined_plots,
@@ -702,7 +721,7 @@ ggplot(num_dane_long, aes(x = Wartość, fill = Zmienne)) +
   scale_fill_manual(values = colors) +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "Histogramy zmiennych numerycznych")
+  labs(title = "Histogramy zmiennych numerycznych", y = "Liczność")
 ```
 
 ```{r}
@@ -741,7 +760,9 @@ ggplot(dane_cat_long, aes(x = Kategoria, fill = Kategoria)) +
   scale_fill_manual(values = colors2) +
   theme_minimal() +
   theme(legend.position = "none") +
-  labs(title = "Wykresy częstości dla zmiennych kategorycznych", x = "Kategoria", y = "Liczność")
+  labs(title = "Wykresy częstości dla zmiennych kategorycznych", 
+       x = "Kategoria", 
+       y = "Liczność")
 ```
 
 Większość wnioskodawców to mężczyźni z wykształceniem wyższym w związku
@@ -763,19 +784,17 @@ Autor: Dominika Szymczak
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Gender)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs płeć") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Płeć") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r}
-wykres_gr <- scale_fill_gradientn(colors = c("#42cec2", "#306591", "#002185", "#0f225f", "#142c45"))
-
-mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs płeć")
+mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs Płeć")
 
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs płeć",
+  labs(title = "Wykres Ilościowy: Status kredytu vs Płeć",
        x = "Status kredytu", y = "Płeć", fill = "Liczność") +
   wykres_gr
 ```
@@ -801,18 +820,18 @@ prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Married)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs stan cywilny") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Stan cywilny") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r}
-mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs stan cywilny")
+mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs Stan cywilny")
 
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs stan cywilny",
-       x = "Status kredytu", y = "Stan cywilny") +
+  labs(title = "Wykres Ilościowy: Status kredytu vs Stan cywilny",
+       x = "Status kredytu", y = "Stan cywilny", fill = "Liczność") +
   wykres_gr
 ```
 
@@ -833,18 +852,18 @@ cywilny* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Dependents)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs liczba osób zależnych finansowo") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Liczba osób zależnych finansowo") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r}
-mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs liczba osób zależnych finansowo")
+mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs Liczba osób zależnych finansowo")
 
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs liczba osób zależnych finansowo",
-       x = "Status kredytu", y = "Liczba osób zależnych finansowo") +
+  labs(title = "Wykres Ilościowy: Status kredytu vs Liczba osób zależnych finansowo",
+       x = "Status kredytu", y = "Liczba osób zależnych finansowo", fill = "Liczność") +
   wykres_gr
 ```
 
@@ -864,18 +883,18 @@ na decyzję kredytową.
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Education)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs poziom edukacji") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Poziom edukacji") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r}
-mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs poziom edukacji")
+mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs Poziom edukacji")
 
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs poziom edukacji",
-       x = "Status kredytu", y = "Poziom edukacji") +
+  labs(title = "Wykres Ilościowy: Status kredytu vs Poziom edukacji",
+       x = "Status kredytu", y = "Poziom edukacji", fill = "Liczność") +
   wykres_gr
 ```
 
@@ -895,18 +914,18 @@ edukacji* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Self_Employed)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs samozatrudnienie") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Samozatrudnienie") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r}
-mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs samozatrudnienie")
+mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs Samozatrudnienie")
 
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs samozatrudnienie",
-       x = "Status kredytu", y = "Samozatrudnienie") +
+  labs(title = "Wykres Ilościowy: Status kredytu vs Samozatrudnienie",
+       x = "Status kredytu", y = "Samozatrudnienie", fill = "Liczność") +
   wykres_gr
 ```
 
@@ -927,18 +946,18 @@ kredytową.
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Loan_Amount_Term)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs okres kredytowania") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Okres kredytowania") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r}
-mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs okres kredytowania")
+mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs Okres kredytowania")
 
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs okres kredytowania",
-       x = "Status kredytu", y = "Okres kredytowania") +
+  labs(title = "Wykres Ilościowy: Status kredytu vs Okres kredytowania",
+       x = "Status kredytu", y = "Okres kredytowania", fill = "Liczność") +
   wykres_gr
 ```
 
@@ -959,7 +978,7 @@ częstości poszczególnych kategorii, wykres może wprowadzać w błąd.
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Credit_History)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs historia kredytowa") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Historia kredytowa") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
@@ -969,8 +988,8 @@ mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs his
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs historia kredytowa",
-       x = "Status kredytu", y = "Historia kredytowa") +
+  labs(title = "Wykres Ilościowy: Status kredytu vs Historia kredytowa",
+       x = "Status kredytu", y = "Historia kredytowa", fill = "Liczność") +
   wykres_gr
 ```
 
@@ -992,18 +1011,18 @@ kredytową.
 ```{r}
 tabela <- table(dane$Loan_Status, dane$Property_Area)
 df_table <- as.data.frame.matrix(tabela)
-kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs położenie obiektu hipoteki") %>%
+kable(df_table, caption = "Tabela krzyżowa: Status kredytu vs Położenie obiektu hipoteki") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
 ```{r}
-mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs położenie obiektu hipoteki")
+mosaicplot(tabela, shade = TRUE, main = "Wykres Mozaikowy: Status kredytu vs Położenie obiektu hipoteki")
 
 ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
   theme_minimal() +
-  labs(title = "Wykres Ilościowy: Status kredytu vs położenie obiektu hipoteki",
-       x = "Status kredytu", y = "Położenie obiektu hipoteki") +
+  labs(title = "Wykres Ilościowy: Status kredytu vs Położenie obiektu hipoteki",
+       x = "Status kredytu", y = "Położenie obiektu hipoteki", fill = "Liczność") +
   wykres_gr
 ```
 
@@ -1168,7 +1187,7 @@ posiadania *historii kredytowej*.
 
 ```{r}
 h <- table(dane$Loan_Status, dane$Credit_History)
-kable(as.data.frame.matrix(h), caption = "Tabela krzyżowa: Status kredytu vs historia kredytowa") %>%
+kable(as.data.frame.matrix(h), caption = "Tabela krzyżowa: Status kredytu vs Historia kredytowa") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
@@ -1213,7 +1232,7 @@ H₁: *Okres kredytowania* wpływa na decyzję o *przyznaniu kredytu*.
 
 ```{r}
 h <- table(dane$Loan_Status, dane$Loan_Amount_Term)
-kable(as.data.frame.matrix(h), caption = "Tabela krzyżowa: Status kredytu vs okres kredytowania") %>%
+kable(as.data.frame.matrix(h), caption = "Tabela krzyżowa: Status kredytu vs Okres kredytowania") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
@@ -1319,7 +1338,7 @@ mannwhitney <- wilcox.test(log_DebtToIncomeRatio ~ Loan_Status, data = dane)
 
 P-value jest większe niż przyjęty poziom istotności, co oznacza brak
 podstaw do odrzucenia hipotezy zerowej o braku zależności między
-*statusem kredytu* a *wskaźnikiem zadłużenia w stosunku do dochodu*.
+*statusem kredytu* a *Wskaźnikiem zadłużenia w stosunku do dochodu*.
 
 #### E. Status kredytu i dochód całkowity
 
@@ -1355,17 +1374,17 @@ mannwhitney <- wilcox.test(log_TotalIncome ~ Loan_Status, data = dane)
 
 P-value jest większe niż przyjęty poziom istotności, co oznacza brak
 podstaw do odrzucenia hipotezy zerowej o braku zależności między
-*statusem kredytu* a *dochodem całkowitym*.
+*statusem kredytu* a *Dochodem całkowitym*.
 
-Zależność zmiennych dotyczących posiadania *historii kredytowej* oraz
-*położenia obiektu hipoteki* ze zmienną dotyczącą *przyznania kredytu*
+Zależność zmiennych dotyczących posiadania *Historii kredytowej* oraz
+*Położenia obiektu hipoteki* ze zmienną dotyczącą *Przyznania kredytu*
 zostały uznane za istotne.
 
-## 4. Grupy klientów według kombinacji Credit_History i Property_Area
+## 4. Grupy klientów według kombinacji *Historii kredytowej* i *Położenie obiektu hipoteki*
 
 Autor: Mikołaj Zalewski
 
-### Dodanie nowej zmiennej grupującej klientów według Credit_History i Property_Area na 6 grup
+### Dodanie nowej zmiennej grupującej klientów według zmiennych *Historia kredytowa* i *Położenie obiektu hipoteki* na 6 grup
 
 ```{r}
 dane$Group <- paste(dane$Property_Area, dane$Credit_History, sep = "_")
