@@ -1,9 +1,9 @@
 ---
 title: "Kredyty hipoteczne"
 author: "Czarnoksiężnicy z Oz"
-date: Opublikowane `r format(Sys.time(), "%A %d %B %Y")`
-editor_options: 
-  markdown: 
+date: "Opublikowane `r format(Sys.time(), "%A %d %B %Y")`"
+editor_options:
+  markdown:
     wrap: 72
 ---
 
@@ -35,7 +35,8 @@ dane <- read.csv("Hipoteczny.csv", header = TRUE)
 dane[dane == ""] <- NA
 dane <- as.data.frame(dane)
 kable(head(dane, 10), caption = "Dane") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(width = "100%", height = "auto")
 ```
 
 ------------------------------------------------------------------------
@@ -66,23 +67,14 @@ kable(head(dane, 10), caption = "Dane") %>%
 
 Autor: Dominika Szymczak
 
-Niniejszy raport jest projektem zaliczeniowym przedmiotu Analiza Danych
-dla kierunku Analityka Gospodarcza II na Politechnice Gdańskiej.
+Niniejszy raport jest projektem zaliczeniowym przedmiotu Analiza Danych dla kierunku Analityka Gospodarcza II na Politechnice Gdańskiej.
 Autorami są: Julia Sowińska, Dominika Szymczak oraz Mikołaj Zalewski.
 
-Celem projektu jest identyfikacja kluczowych czynników wpływających na
-zatwierdzenie kredytu mieszkaniowego, analiza procesu jego zatwierdzania
-oraz opracowanie modelu predykcyjnego wspierającego automatyczne
-podejmowanie decyzji w oparciu o dane klienta.
+Celem projektu jest identyfikacja kluczowych czynników wpływających na zatwierdzenie kredytu mieszkaniowego, analiza procesu jego zatwierdzania oraz opracowanie modelu predykcyjnego wspierającego automatyczne podejmowanie decyzji w oparciu o dane klienta.
 
-Otrzymane dane obejmują cechy wnioskodawców, takie jak płeć, poziom
-edukacji, dochody, historia kredytowa, parametry kredytu oraz inne.
-Analiza obejmuje eksplorację danych oraz ich wyczyszczenie i
-przygotowanie do analizy, identyfikację kluczowych zależności i
-segmentację klientów. Na tej podstawie zostanie zbudowany model
-predykcyjny usprawniający proces przyznawania kredytów, który
-minimalizuje ryzyko ich udzielania klientom o niskiej zdolności
-kredytowej.
+Otrzymane dane obejmują cechy wnioskodawców, takie jak płeć, poziom edukacji, dochody, historia kredytowa, parametry kredytu oraz inne.
+Analiza obejmuje eksplorację danych oraz ich wyczyszczenie i przygotowanie do analizy, identyfikację kluczowych zależności i segmentację klientów.
+Na tej podstawie zostanie zbudowany model predykcyjny usprawniający proces przyznawania kredytów, który minimalizuje ryzyko ich udzielania klientom o niskiej zdolności kredytowej.
 
 ------------------------------------------------------------------------
 
@@ -109,11 +101,8 @@ kable(miss_var_summary(dane), caption = "Podsumowanie brakujących wratości") %
 
 ```
 
-W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich
-rekordów. Występują one w kolumnach *Historia kredytowa* (50),
-*Samozatrudnienie* (32), *Kwota kredytu* (22), *Liczba osób zależnych
-finansowo* 15), *Czas trwania kredytu* (14), *Płeć* (13) i *Stan
-cywilny* (3).
+W tabeli jest 149 pustych rekordów, co stanowi 1,87% wszytskich rekordów.
+Występują one w kolumnach *Historia kredytowa* (50), *Samozatrudnienie* (32), *Kwota kredytu* (22), *Liczba osób zależnych finansowo* 15), *Czas trwania kredytu* (14), *Płeć* (13) i *Stan cywilny* (3).
 
 ### Wyliczenie procentu brakujących danych w każdej kolumnie
 
@@ -123,8 +112,8 @@ kable(miss_case_table(dane), caption = "Podsumowanie liczby brakujących wratoś
 
 ```
 
-480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych
-rekordów). Stanowi to 78,18% wszystkich obserwacji.
+480 obserwacji (z 614) jest w pełni wypełnionych (brak pustych rekordów).
+Stanowi to 78,18% wszystkich obserwacji.
 
 ### Wykonanie wizualizacji braków danych
 
@@ -142,15 +131,12 @@ gg_miss_fct(dane, fct = Self_Employed) +
   theme_minimal()
 ```
 
-Braki w *Samozatrudnieniu* mogą być efektem niepodania informacji przez
-aplikantów lub nieposiadania formalnego zatrudnienia.
+Braki w *Samozatrudnieniu* mogą być efektem niepodania informacji przez aplikantów lub nieposiadania formalnego zatrudnienia.
 
-W kwocie kredytu może brakować danych z powodu problemów z wyceną
-wnioskowanej kwoty w momencie wypełniania wniosku internetowego.
+W kwocie kredytu może brakować danych z powodu problemów z wyceną wnioskowanej kwoty w momencie wypełniania wniosku internetowego.
 
-Kolumna *Historia kredytowa* ma największy odsetek braków w kategorii NA
-w *Samozatrudnieniu*. To znaczy, że ten brak danych jest często
-powiązany z brakiem historii kredytowej.
+Kolumna *Historia kredytowa* ma największy odsetek braków w kategorii NA w *Samozatrudnieniu*.
+To znaczy, że ten brak danych jest często powiązany z brakiem historii kredytowej.
 
 ------------------------------------------------------------------------
 
@@ -166,12 +152,9 @@ gg_miss_upset(dane, nsets = 7,
               main.bar.color = "#0f225f")
 ```
 
-Wykres potwierdza poprzednie wyniki o dominacji pojedynczych zbiorach
-braków.
+Wykres potwierdza poprzednie wyniki o dominacji pojedynczych zbiorach braków.
 
-Najwięcej braków danych jest w kolumnie *Historia kredytowa* i są to
-braki pojedyncze, to znaczy, że z pośród wszystkich kolumn w 43
-wierszach tylko kolumna *Historia kredytowa* ma NA.
+Najwięcej braków danych jest w kolumnie *Historia kredytowa* i są to braki pojedyncze, to znaczy, że z pośród wszystkich kolumn w 43 wierszach tylko kolumna *Historia kredytowa* ma NA.
 
 ```{r warning=FALSE}
 kable(data.frame(
@@ -182,53 +165,29 @@ kable(data.frame(
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-Patrząc na rozkład wartości w kolumnie *Historia kredytowa* oraz na
-liczbę brakujących wartości, nasuwa się założenie, że wartości brakujące
-mogą reprezentować kredytobiorców, którzy nie chcieli przyznawać się do
-braku historii kredytowej lub dla których bank napotkał problemy z
-pozyskaiem danych.
+Patrząc na rozkład wartości w kolumnie *Historia kredytowa* oraz na liczbę brakujących wartości, nasuwa się założenie, że wartości brakujące mogą reprezentować kredytobiorców, którzy nie chcieli przyznawać się do braku historii kredytowej lub dla których bank napotkał problemy z pozyskaiem danych.
 
-Podobnie w przypadku braków w kolumnie *Samozatrudnienie* - mogą one
-reprezentować kredytobiorców, którzy nie chcieli przyznawać się do
-samozatrudnienia lub uznali, że nie muszą oni wypełniać tej kolumny.
+Podobnie w przypadku braków w kolumnie *Samozatrudnienie* - mogą one reprezentować kredytobiorców, którzy nie chcieli przyznawać się do samozatrudnienia lub uznali, że nie muszą oni wypełniać tej kolumny.
 
-Tym samym, braki w tych dwóch zmiennych uznane zostają za MNAR (Missing
-Not at Random).
+Tym samym, braki w tych dwóch zmiennych uznane zostają za MNAR (Missing Not at Random).
 
-Braki w kolumnie *Kwota kredytu* mogą reprezentować klientów, który
-złożyli wniosek kredytowy bez konkretnej kwoty, zakładając, że kwota
-zostanie ustalona podczas analizy. Co ciekawe, spośród wierszy
-charakteryzujących się wartością NA w kolumnie *Kwota kredytów* równo
-połowa ma *Status kredytu* równy Y i połowa równy N.
+Braki w kolumnie *Kwota kredytu* mogą reprezentować klientów, który złożyli wniosek kredytowy bez konkretnej kwoty, zakładając, że kwota zostanie ustalona podczas analizy.
+Co ciekawe, spośród wierszy charakteryzujących się wartością NA w kolumnie *Kwota kredytów* równo połowa ma *Status kredytu* równy Y i połowa równy N.
 
-Braki w kolumnie *Czas trwania kredytu* sytuacja może wyglądać
-podobnie - mogą to być klienci, którzy nie wypełnili wartości w
-kolumnie, zakładając domyślne ustawienia banku. Dlatego braki w
-kolumnach *Kwota kredytu* i *Czas trwania kredytu* również zostają
-uznane za potencjalne MNAR.
+Braki w kolumnie *Czas trwania kredytu* sytuacja może wyglądać podobnie - mogą to być klienci, którzy nie wypełnili wartości w kolumnie, zakładając domyślne ustawienia banku.
+Dlatego braki w kolumnach *Kwota kredytu* i *Czas trwania kredytu* również zostają uznane za potencjalne MNAR.
 
-Braki w kolumnie *Płeć* mogą reprezentować osoby, które nie chciały
-podawać tej informacji, uznając, że płeć nie powinna mieć wpływu na
-decyzje kredytową. Braki w kolumnie *Liczba osób zależnych finansowo*
-mogą oznaczać świadome pominięcie pytania w obawie przed negatywnym
-wpływem odpowiedzi na zdolność kredytową lub po prostu z braku
-obowiązku. Dlatego braki zmiennej *Stan cywilny* oraz braki zmiennej
-*Płeć* zostają uznane za MNAR.
+Braki w kolumnie *Płeć* mogą reprezentować osoby, które nie chciały podawać tej informacji, uznając, że płeć nie powinna mieć wpływu na decyzje kredytową.
+Braki w kolumnie *Liczba osób zależnych finansowo* mogą oznaczać świadome pominięcie pytania w obawie przed negatywnym wpływem odpowiedzi na zdolność kredytową lub po prostu z braku obowiązku.
+Dlatego braki zmiennej *Stan cywilny* oraz braki zmiennej *Płeć* zostają uznane za MNAR.
 
-Wracając do wykresu przecięć wartości - kombinacje z małą liczbą braków
-mogą być przypadkowe i niekoniecznie oznaczają zależności.
+Wracając do wykresu przecięć wartości - kombinacje z małą liczbą braków mogą być przypadkowe i niekoniecznie oznaczają zależności.
 
-Kombinacja między *Samozatrudnienie* i *Historia kredytowa* również
-występuje niewiele razy - 5. Jednak, jako że jest to najczęściej
-występująca kombinacja, zostanie ona rozważona jako potencjalny związek.
-Może on być związany z obawą o negatywną ocenę zdolności kredytowej
-(jako że samozatrudnienie jest bardziej ryzykowne) i tym samym obawą o
-niższej kwocie kredytu lub wyższym oprocentowaniu. A także z
-trudnościami w uzyskaniu kredytów w przeszłości, co prowadzi do
-niekorzystnych danych w historii kredytowej. W takim wypadku,
-kredytobiorcy celowo nie podawaliby statusu samozatrudnienia i
-składaliby prośbę o wyższe kwoty kredytu, w nadziei, że bank uzna ich za
-zatrudnionych na pełen etat bez historii kredytowej.
+Kombinacja między *Samozatrudnienie* i *Historia kredytowa* również występuje niewiele razy - 5.
+Jednak, jako że jest to najczęściej występująca kombinacja, zostanie ona rozważona jako potencjalny związek.
+Może on być związany z obawą o negatywną ocenę zdolności kredytowej (jako że samozatrudnienie jest bardziej ryzykowne) i tym samym obawą o niższej kwocie kredytu lub wyższym oprocentowaniu.
+A także z trudnościami w uzyskaniu kredytów w przeszłości, co prowadzi do niekorzystnych danych w historii kredytowej.
+W takim wypadku, kredytobiorcy celowo nie podawaliby statusu samozatrudnienia i składaliby prośbę o wyższe kwoty kredytu, w nadziei, że bank uzna ich za zatrudnionych na pełen etat bez historii kredytowej.
 
 ### Analiza relacji brakujących wartości
 
@@ -242,14 +201,9 @@ ggplot(data = dane, aes(x = Credit_History, y = LoanAmount)) +
   facet_wrap(~Self_Employed, scales = "free")
 ```
 
-Można zauważyć, że z pośród kredytobiorców z wartością NA w kolumnie
-*Samozatrudnienie* oraz w kolumnie *Historia kredytowa*, niemalże
-wszyscy (poza jednym przypadkiem z brakiem danych również w kolumnie
-*Kwota kredytu*) mają wartości w kolumnie *Kwota kredytu* powyżej 150,
-czyli większe niż w innych grupach.
+Można zauważyć, że z pośród kredytobiorców z wartością NA w kolumnie *Samozatrudnienie* oraz w kolumnie *Historia kredytowa*, niemalże wszyscy (poza jednym przypadkiem z brakiem danych również w kolumnie *Kwota kredytu*) mają wartości w kolumnie *Kwota kredytu* powyżej 150, czyli większe niż w innych grupach.
 
-To może być argumentem za przyjęciem tezy, że osoby, które nie
-odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
+To może być argumentem za przyjęciem tezy, że osoby, które nie odpowiedziały na pytanie o samozatrudnienie, są samozatrudnione.
 
 ------------------------------------------------------------------------
 
@@ -259,23 +213,14 @@ Autor: Mikołaj Zalewski
 
 ### Decyzja o strategii postępowania z brakującymi danymi
 
-Obseracje z brakiem danych w kolumnie *Historia kredytowa* zastąpimy
-wartością 0 zgodnie z naszymi wcześniejszymi wnioskami. Obserwacje z
-brakiem danych w kolumnach *Płeć* i *Stan cywilny* zostaną zastąpione
-wartością "undefined", czyli po polsku "nieokreślone". Każdy wniosek o
-kredyt jest ważny, więc usuwanie obserwacji nie jest dobrym
-rozwiązaniem. Obserwacje z brakiem danych w kolumnie *Liczba osób
-zależnych finansowo* zostaną zastąpione wartością 0. Dla obserwacji z
-brakiem danych w kolumnie *Czas trwania kredytu* można przyjąć strategię
-inputacji wartością, która występuje w znaczącej większości obserwacji,
-czyli najpopularniejszym czasem, na jaki bierze się kredyt (czyli 360
-dni). Obserwacje z brakiem danych w kolumnie *Samozatrudnienie* zgodnie
-z naszą wcześniej opisaną tezą zamieniamy na wartość "Yes", czyli
-potwierdzającą samozatrudnienie.
+Obseracje z brakiem danych w kolumnie *Historia kredytowa* zastąpimy wartością 0 zgodnie z naszymi wcześniejszymi wnioskami.
+Obserwacje z brakiem danych w kolumnach *Płeć* i *Stan cywilny* zostaną zastąpione wartością "undefined", czyli po polsku "nieokreślone".
+Każdy wniosek o kredyt jest ważny, więc usuwanie obserwacji nie jest dobrym rozwiązaniem.
+Obserwacje z brakiem danych w kolumnie *Liczba osób zależnych finansowo* zostaną zastąpione wartością 0.
+Dla obserwacji z brakiem danych w kolumnie *Czas trwania kredytu* można przyjąć strategię inputacji wartością, która występuje w znaczącej większości obserwacji, czyli najpopularniejszym czasem, na jaki bierze się kredyt (czyli 360 dni).
+Obserwacje z brakiem danych w kolumnie *Samozatrudnienie* zgodnie z naszą wcześniej opisaną tezą zamieniamy na wartość "Yes", czyli potwierdzającą samozatrudnienie.
 
-Obserwacje z brakiem danych w kolumnie *Kwota kredytu* uzupełnione będą
-za pomocą techniki Hot Deck, w której brakująca wartość zastępowana
-będzie wartością od klienta o najbardziej podobnych cechach.
+Obserwacje z brakiem danych w kolumnie *Kwota kredytu* uzupełnione będą za pomocą techniki Hot Deck, w której brakująca wartość zastępowana będzie wartością od klienta o najbardziej podobnych cechach.
 
 ### Przeprowadzenie powyższej strategii
 
@@ -304,8 +249,8 @@ W zbiorze danych nie występują już żadne puste wartości.
 
 Autor: Dominika Szymczak i Julia Sowińska
 
-Na tym etapie sprawdzić należy, czy nasz zbiór danych zawiera wartości
-logiczne. Wprowadzone zostają ograniczenia dla zmiennych:
+Na tym etapie sprawdzić należy, czy nasz zbiór danych zawiera wartości logiczne.
+Wprowadzone zostają ograniczenia dla zmiennych:
 
 \- *Dochód aplikanta* powinna być większa lub równa 0
 
@@ -337,19 +282,14 @@ Dla danych numerycznych wprowadzone zostały ograniczenia:
 
 \- dla zmiennej *Dochód aplikanta* wartości nie mogą być mniejsze niż 0
 
-\- dla zmiennej *Dochód współaplikanta* wartości nie mogą być mniejsze
-niż 0
+\- dla zmiennej *Dochód współaplikanta* wartości nie mogą być mniejsze niż 0
 
-\- dla zmiennej *Wartość kredytu* wartości nie mogą być mniejsze lub
-równe 0
+\- dla zmiennej *Wartość kredytu* wartości nie mogą być mniejsze lub równe 0
 
-\- dla zmiennej *Okres kredytowania* wartości nie mogą być mniejsze niż
-0
+\- dla zmiennej *Okres kredytowania* wartości nie mogą być mniejsze niż 0
 
-Dla rekordów, których wartości nie spełniały ograniczeń przypisane
-powinny zostać wartości NA. Jednak w tym przypadku, wszystkie wartości
-zmiennych spełniały założone ograniczenia i nie ma potrzeby
-przeprowadzenia dalszego przekształacania tych danych.
+Dla rekordów, których wartości nie spełniały ograniczeń przypisane powinny zostać wartości NA.
+Jednak w tym przypadku, wszystkie wartości zmiennych spełniały założone ograniczenia i nie ma potrzeby przeprowadzenia dalszego przekształacania tych danych.
 
 ### Wykrycie i usunięcie/przekształcenie wartości logicznie niepoprawnych (niemożliwych) dla wartości tekstowych
 
@@ -399,13 +339,11 @@ kable(table(dane$Loan_Status), caption = "Tabela częstości statusu kredytu", c
 
 ```
 
-Dla danych tekstowych, tak jak dla danych numerycznych nie znaleziono
-żadnych odstających od założeń wartości i nie ma potrzeby
-przeprowadzenia dalszego przekształacania tych danych.
+Dla danych tekstowych, tak jak dla danych numerycznych nie znaleziono żadnych odstających od założeń wartości i nie ma potrzeby przeprowadzenia dalszego przekształacania tych danych.
 
 ### Sprawdzenie rozkładów zmiennych i ich statystyki opisowe
 
-```{r}
+```{r warning=FALSE}
 plot_variables <- list(
   "Gender" = "Rozkład Gender",
   "Married" = "Rozkład Married",
@@ -442,45 +380,27 @@ plot_grid(
 
 ```
 
-W zmiennej *Płeć* dominującą kategorią są mężczyźni (489 przypadków),
-natomiast kobiet jest 112, a w 13 przypadkach płeć nie została
-określona. W odniesieniu do zmiennej *Stan cywilny*, większość osób to
-osoby w związku małżeńskim (398), podczas gdy niezamężnych jest 213, a 3
-przypadki pozostają niezdefiniowane.
+W zmiennej *Płeć* dominującą kategorią są mężczyźni (489 przypadków), natomiast kobiet jest 112, a w 13 przypadkach płeć nie została określona.
+W odniesieniu do zmiennej *Stan cywilny*, większość osób to osoby w związku małżeńskim (398), podczas gdy niezamężnych jest 213, a 3 przypadki pozostają niezdefiniowane.
 
-Zmienna *Liczba osób zależnych finansowo* wskazuje, że najwięcej
-respondentów (360) nie posiada osób na utrzymaniu, 102 osoby deklarują
-jedną osobę na utrzymaniu, 101 osób dwie, a 51 osób trzy lub więcej. W
-odniesieniu do zmiennej *Poziom edukacji*, większość osób posiada
-wykształcenie wyższe (480), a 134 osoby mają niższy poziom
-wykształcenia.
+Zmienna *Liczba osób zależnych finansowo* wskazuje, że najwięcej respondentów (360) nie posiada osób na utrzymaniu, 102 osoby deklarują jedną osobę na utrzymaniu, 101 osób dwie, a 51 osób trzy lub więcej.
+W odniesieniu do zmiennej *Poziom edukacji*, większość osób posiada wykształcenie wyższe (480), a 134 osoby mają niższy poziom wykształcenia.
 
-W przypadku zmiennej *Samozatrudneinie*, 500 osób zadeklarowało, że nie
-prowadzi działalności gospodarczej, a 114 osób to osoby samozatrudnione.
-Zmienna *Dochód aplikanta*, opisująca dochód głównego wnioskodawcy,
-wskazuje na wartości od 150 do 81 000, przy czym mediana wynosi 3812, a
-średnia 5403, co wskazuje na obecność wartości odstających. *Dochód
-współaplikanta* jest w wielu przypadkach równy 0 (25. percentyl to 0),
-co oznacza, że wiele osób nie posiada współwnioskodawcy. Mediana wynosi
-1188, średnia to 1621, a maksymalna wartość wynosi 41 667.
+W przypadku zmiennej *Samozatrudneinie*, 500 osób zadeklarowało, że nie prowadzi działalności gospodarczej, a 114 osób to osoby samozatrudnione.
+Zmienna *Dochód aplikanta*, opisująca dochód głównego wnioskodawcy, wskazuje na wartości od 150 do 81 000, przy czym mediana wynosi 3812, a średnia 5403, co wskazuje na obecność wartości odstających.
+*Dochód współaplikanta* jest w wielu przypadkach równy 0 (25. percentyl to 0), co oznacza, że wiele osób nie posiada współwnioskodawcy.
+Mediana wynosi 1188, średnia to 1621, a maksymalna wartość wynosi 41 667.
 
-Zmienna *Kwota kredytu*, określająca kwotę pożyczki, ma wartości od 9 do
-700, przy medianie 128 i średniej 145,8, co również sugeruje obecność
-wartości odstających. *Okres kredytowania*, opisujący czas spłaty
-pożyczki w miesiącach, waha się od 12 do 480 miesięcy, z medianą 360
-miesięcy (30 lat).
+Zmienna *Kwota kredytu*, określająca kwotę pożyczki, ma wartości od 9 do 700, przy medianie 128 i średniej 145,8, co również sugeruje obecność wartości odstających.
+*Okres kredytowania*, opisujący czas spłaty pożyczki w miesiącach, waha się od 12 do 480 miesięcy, z medianą 360 miesięcy (30 lat).
 
-*Historia kredytowa* wskazuje, że większość wnioskodawców (około 77,4%)
-posiada pozytywną historię kredytową (wartość 1). Rozkład zmiennej
-*Położenie obiektu hipoteki* pokazuje, że 179 obiektów znajduje się na
-terenach wiejskich, 233 w obszarach półmiejskich, a 202 w miastach.
-Zmienna *Status kredytu*, opisująca status wniosku o pożyczkę, wskazuje,
-że większość wniosków (422) została zatwierdzona, a 192 odrzucono.
+*Historia kredytowa* wskazuje, że większość wnioskodawców (około 77,4%) posiada pozytywną historię kredytową (wartość 1).
+Rozkład zmiennej *Położenie obiektu hipoteki* pokazuje, że 179 obiektów znajduje się na terenach wiejskich, 233 w obszarach półmiejskich, a 202 w miastach.
+Zmienna *Status kredytu*, opisująca status wniosku o pożyczkę, wskazuje, że większość wniosków (422) została zatwierdzona, a 192 odrzucono.
 
 ### Wykrycie i usunięcie/przekształcenie wartości odstających
 
-kable(common_outliers_LoanAmount, caption = "Wartości odstające kwot
-kredytów") %\>%
+kable(common_outliers_LoanAmount, caption = "Wartości odstające kwot kredytów") %\>%
 
 kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 
@@ -529,32 +449,16 @@ kable(common_outliers_CoapplicantIncome, caption = "Wartości odstające dochod�
 
 ```
 
-W celu wykrycia wartości odstających posłużono się kombinacją dwóch
-metod - metody Z-score (gdzie wartość jest odstająca, jeśli jej
-odległość od średniej w jednostkach odchylenia standardowego jest
-większa niż 3 lub mniejsza niż -3) oraz metoda IQR (gdzie wartość jest
-odstająca, jeśli znajduje się poniżej dolnej granicY Q1−1.5×IQR lub
-powyżej górnej granicy Q3+1.5×IQR). Aby porównać wyniki obu metod,
-wybraliśmy te wiersze, które zostały uznane za wartości odstające
-zarówno przez metodę Z-score, jak i przez metodę IQR.
+W celu wykrycia wartości odstających posłużono się kombinacją dwóch metod - metody Z-score (gdzie wartość jest odstająca, jeśli jej odległość od średniej w jednostkach odchylenia standardowego jest większa niż 3 lub mniejsza niż -3) oraz metoda IQR (gdzie wartość jest odstająca, jeśli znajduje się poniżej dolnej granicY Q1−1.5×IQR lub powyżej górnej granicy Q3+1.5×IQR).
+Aby porównać wyniki obu metod, wybraliśmy te wiersze, które zostały uznane za wartości odstające zarówno przez metodę Z-score, jak i przez metodę IQR.
 
 W ten sposób doszliśmy do wniosków:
 
-\- zmienna *Dochód aplikanta* ma 8 wartości odstających, które jednak
-reprezentują sobą osoby o bardzo wysokich dochodach (które mogłyby być
-wartościowymi kredytobiorcami) - dlatego postanowiliśmy pozostawić te
-wartości bez zmian;
+\- zmienna *Dochód aplikanta* ma 8 wartości odstających, które jednak reprezentują sobą osoby o bardzo wysokich dochodach (które mogłyby być wartościowymi kredytobiorcami) - dlatego postanowiliśmy pozostawić te wartości bez zmian;
 
-\- zmienna *Dochód współaplikanta* ma 6 wartości odstających, które
-reprezentują sobą osoby, których współkredytobiorca ma wysokie dochody
-(dochody te jednak mieszczą się w większości w średniej wartości
-zmiennej *Dochód aplikanta*) - dlatego te wartości też postanowiliśmy
-pozostawić bez zmian;
+\- zmienna *Dochód współaplikanta* ma 6 wartości odstających, które reprezentują sobą osoby, których współkredytobiorca ma wysokie dochody (dochody te jednak mieszczą się w większości w średniej wartości zmiennej *Dochód aplikanta*) - dlatego te wartości też postanowiliśmy pozostawić bez zmian;
 
-\- zmienna *Kwota kredytu* ma 15 wartości odstających, które jednak
-reprezentują sobą osoby składające wnioski o najwyższe kwoty kredytu
-(które różnież mogłyby być wartościowymi klientami firmy) - dlatego te
-wartości także postanowiliśmy pozostawić bez zmian.
+\- zmienna *Kwota kredytu* ma 15 wartości odstających, które jednak reprezentują sobą osoby składające wnioski o najwyższe kwoty kredytu (które różnież mogłyby być wartościowymi klientami firmy) - dlatego te wartości także postanowiliśmy pozostawić bez zmian.
 
 ### Niezbędne przekształcenia log-transform
 
@@ -577,17 +481,10 @@ combined_plots <- log_plot_list %>%
 combined_plots
 ```
 
-Ze względu na dużą skośność w rozkładach zmiennych *Dochód aplikanta,
-Dochód współaplikanta* i *Kwota kredytu* postanowiono wprowadzić także
-zmienne reprezentujące ich log-transformację. Ze względu na możliwe zera
-w tych kolumnach, zdecydowaliśmy się na funkcję log1p() zamiast log()
-(log(0) jest niezdefiniowane). Na wykresach przedstawiających rozkłady
-tych zlogarytmowanych zmiennych, można zauważyć, że po transformacji
-rozkłady te zbliżyły się zdecydowanie do rozkładu normalnego. Jedynie w
-przypadku zmiennej log_CoapplicantIncome (*zlogarytmowany Dochód
-współaplikanta*) można nadal zauważyć dość dużą skośność, spowodowaną
-dużą liczbą ludzi składających wniosek o kredyt samodzielnie, lub wraz z
-współkredytobiorcą bez dochodów.
+Ze względu na dużą skośność w rozkładach zmiennych *Dochód aplikanta, Dochód współaplikanta* i *Kwota kredytu* postanowiono wprowadzić także zmienne reprezentujące ich log-transformację.
+Ze względu na możliwe zera w tych kolumnach, zdecydowaliśmy się na funkcję log1p() zamiast log() (log(0) jest niezdefiniowane).
+Na wykresach przedstawiających rozkłady tych zlogarytmowanych zmiennych, można zauważyć, że po transformacji rozkłady te zbliżyły się zdecydowanie do rozkładu normalnego.
+Jedynie w przypadku zmiennej log_CoapplicantIncome (*zlogarytmowany Dochód współaplikanta*) można nadal zauważyć dość dużą skośność, spowodowaną dużą liczbą ludzi składających wniosek o kredyt samodzielnie, lub wraz z współkredytobiorcą bez dochodów.
 
 ------------------------------------------------------------------------
 
@@ -597,22 +494,22 @@ Autor: Mikołaj Zalewski
 
 ### Dodanie nowych zmiennych i sprawdzenie ich rozkładów oraz statystyk opisowych
 
-Stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego
-się o kredyt
+Stworzenie zmiennej łączny przychód gospodarstwa domowego ubiegającego się o kredyt
 
 ```{r warning=FALSE}
 dane$TotalIncome <- dane$ApplicantIncome + dane$CoapplicantIncome
 kable(head(dane), caption = "Nowostworzona zmienna dochodu całkowitego") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(width = "100%", height = "auto")
 ```
 
-Stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa
-domowego
+Stworzenie zmiennej stosunek długu do łącznych przychdów gospodarstwa domowego
 
 ```{r warning=FALSE}
 dane$DebtToIncomeRatio <-dane$LoanAmount / dane$TotalIncome
 kable(head(dane), caption = "Nowostworzona zmienna wskaźnika zadłużenia w stosunku do dochodu całkowitego") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(width = "100%", height = "auto")
 
 ```
 
@@ -649,20 +546,16 @@ common_outliers_DebtToIncomeRatio <- intersect(
   z_outliers_DebtToIncomeRatio, iqr_outliers_DebtToIncomeRatio)
 
 kable(common_outliers_TotalIncome, caption = "Wartości odstające dochodu całkowitego") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(width = "100%", height = "auto")
 kable(common_outliers_DebtToIncomeRatio, caption = "Wartości odstające wskaźnika zadłużenia w stosunku do dochodu") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(width = "100%", height = "auto")
 ```
 
-Zmienna *Dochód całkowity* ma 10 wartości odstających, jednakże tak samo
-jak w przypadku zmiennych *Dochód aplikanta* oraz *Dochód
-współaplikanta*, są to osoby z wysokimi zarobkami więc postanwoiliśmy
-zostawić je bez zmian.
+Zmienna *Dochód całkowity* ma 10 wartości odstających, jednakże tak samo jak w przypadku zmiennych *Dochód aplikanta* oraz *Dochód współaplikanta*, są to osoby z wysokimi zarobkami więc postanwoiliśmy zostawić je bez zmian.
 
-Zmienna *Wskaźnik zadłużenia w stosunku do dochodu* ma 8 wartości
-odstających, które jednak także zdecydowano pozostawić bez zmian ze
-względu na obawę utraty cennych informacji dotyczących podejmowania
-decyzji o przyznaniu kredytu.
+Zmienna *Wskaźnik zadłużenia w stosunku do dochodu* ma 8 wartości odstających, które jednak także zdecydowano pozostawić bez zmian ze względu na obawę utraty cennych informacji dotyczących podejmowania decyzji o przyznaniu kredytu.
 
 ### Przekształcenie danych log transform
 
@@ -690,7 +583,8 @@ combined_plots
 ```{r}
 write.csv(dane, "DanePoprawione.csv", row.names = FALSE)
 kable(head(dane, 10), caption = "Dane") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>%
+  scroll_box(width = "100%", height = "auto")
 ```
 
 ------------------------------------------------------------------------
@@ -742,16 +636,11 @@ kable(summary_table, caption = "Statystyki opisowe zmiennych numerycznych") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-*Dochód wnioskodawcy* pokazuje silną asymetrię prawostronną – większość
-dochodów jest stosunkowo niska, ale istnieje kilka bardzo wysokich
-wartości. Potwierdza to także średnia, która jest znacznie większa niż
-mediana. Znaczna część wartości *dochodów współwnioskodawcy* to zero (co
-oznacza, że wiele osób składało wniosek o kredyt samodzielnie lub
-współwnioskodawca nie ma żadnego dochodu). K*wota kredytu* oraz
-*całkowity dochód* mają rozkłady podobne do dochodu wnioskodawcy –
-większość wartości jest stosunkowo niska, ale występują duże różnice.
-Wskaźnik zadłużenia do dochodu wskazuje na mocno skupione wartości,
-sugerując, że większość osób ma podobny stosunek zadłużenia do dochodu.
+*Dochód wnioskodawcy* pokazuje silną asymetrię prawostronną – większość dochodów jest stosunkowo niska, ale istnieje kilka bardzo wysokich wartości.
+Potwierdza to także średnia, która jest znacznie większa niż mediana.
+Znaczna część wartości *dochodów współwnioskodawcy* to zero (co oznacza, że wiele osób składało wniosek o kredyt samodzielnie lub współwnioskodawca nie ma żadnego dochodu).
+K*wota kredytu* oraz *całkowity dochód* mają rozkłady podobne do dochodu wnioskodawcy – większość wartości jest stosunkowo niska, ale występują duże różnice.
+Wskaźnik zadłużenia do dochodu wskazuje na mocno skupione wartości, sugerując, że większość osób ma podobny stosunek zadłużenia do dochodu.
 
 ```{r}
 ggplot(dane_cat_long, aes(x = Kategoria, fill = Kategoria)) +
@@ -765,13 +654,11 @@ ggplot(dane_cat_long, aes(x = Kategoria, fill = Kategoria)) +
        y = "Liczność")
 ```
 
-Większość wnioskodawców to mężczyźni z wykształceniem wyższym w związku
-małżeńskim bez osób na utrzymaniu. Wnioskodawcy są dość równomiernie
-podzieleni między obszary: wiejski (Rural), pół-miejski (Semiurban) i
-miejski (Urban). Zdecydowana większość osób to pracownicy etatowi, a
-osoby samozatrudnione stanowią niewielki procent. Większość osób ma
-istniejącą historię kredytową i wybiera okres spłaty równy 360 miesięcy
-(30 lat). Większości osób kredyt został przyznany.
+Większość wnioskodawców to mężczyźni z wykształceniem wyższym w związku małżeńskim bez osób na utrzymaniu.
+Wnioskodawcy są dość równomiernie podzieleni między obszary: wiejski (Rural), pół-miejski (Semiurban) i miejski (Urban).
+Zdecydowana większość osób to pracownicy etatowi, a osoby samozatrudnione stanowią niewielki procent.
+Większość osób ma istniejącą historię kredytową i wybiera okres spłaty równy 360 miesięcy (30 lat).
+Większości osób kredyt został przyznany.
 
 ## 2. Dwuwymiarowa analiza danych
 
@@ -799,21 +686,14 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach
-*płci* w podziale na *status kredytu* (No, Yes). Kolorystyka wskazuje
-liczność poszczególnych grup – im ciemniejszy kolor, tym większa liczba
-obserwacji. Najwięcej aplikacji kredytowych pochodzi od mężczyzn, co
-sugeruje, że są oni dominującą grupą w badanej próbie. Nie ma widocznych
-znaczących różnic między kategoriami Male i Female pod względem
-proporcji decyzji kredytowych – obie płcie wydają się być traktowane
-podobnie przez instytucję kredytową.
+Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach *płci* w podziale na *status kredytu* (No, Yes).
+Kolorystyka wskazuje liczność poszczególnych grup – im ciemniejszy kolor, tym większa liczba obserwacji.
+Najwięcej aplikacji kredytowych pochodzi od mężczyzn, co sugeruje, że są oni dominującą grupą w badanej próbie.
+Nie ma widocznych znaczących różnic między kategoriami Male i Female pod względem proporcji decyzji kredytowych – obie płcie wydają się być traktowane podobnie przez instytucję kredytową.
 
-Wykres mozaikowy przedstawia proporcje między *płcią* a *statusem
-kredytu*. Każdy prostokąt odpowiada konkretnej kombinacji wartości
-(Male-Yes, Female-No itd.), a jego wielkość odzwierciedla liczność danej
-grupy. Wartości standaryzowanych reszt nie wskazują na istotne
-odchylenia od wartości oczekiwanych, co oznacza, że *płeć*
-prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
+Wykres mozaikowy przedstawia proporcje między *płcią* a *statusem kredytu*.
+Każdy prostokąt odpowiada konkretnej kombinacji wartości (Male-Yes, Female-No itd.), a jego wielkość odzwierciedla liczność danej grupy.
+Wartości standaryzowanych reszt nie wskazują na istotne odchylenia od wartości oczekiwanych, co oznacza, że *płeć* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 
 -   **Status kredytu vs stan cywilny**
 
@@ -835,17 +715,12 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach
-*stanu cywilnego* w podziale na *status kredytu* (No, Yes). Najwięcej
-aplikacji kredytowych pochodzi od ludzi w związach małżeńskim, co
-sugeruje, że są oni dominującą grupą w badanej próbie. Nie ma widocznych
-znaczących różnic między kategoriami *stanu cywilnego* pod względem
-proporcji decyzji kredytowych.
+Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach *stanu cywilnego* w podziale na *status kredytu* (No, Yes).
+Najwięcej aplikacji kredytowych pochodzi od ludzi w związach małżeńskim, co sugeruje, że są oni dominującą grupą w badanej próbie.
+Nie ma widocznych znaczących różnic między kategoriami *stanu cywilnego* pod względem proporcji decyzji kredytowych.
 
-Wykres mozaikowy przedstawia proporcje między *stanem cywilnym* a
-*statusem kredytu*. Wartości standaryzowanych reszt nie wskazują na
-istotne odchylenia od wartości oczekiwanych, co oznacza, że *stan
-cywilny* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
+Wykres mozaikowy przedstawia proporcje między *stanem cywilnym* a *statusem kredytu*.
+Wartości standaryzowanych reszt nie wskazują na istotne odchylenia od wartości oczekiwanych, co oznacza, że *stan cywilny* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 
 -   **Status kredytu vs liczba osób zależnych finansowo**
 
@@ -867,16 +742,11 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczbę osób z określoną *liczbą osób
-zależnych finansowo* w podziale na *status kredytu* (No, Yes). Najwięcej
-aplikacji kredytowych pochodzi od osób bez osób zależnych finansowo, co
-sugeruje, że są oni dominującą grupą w badanej próbie.
+Wykres ilościowy przedstawia liczbę osób z określoną *liczbą osób zależnych finansowo* w podziale na *status kredytu* (No, Yes).
+Najwięcej aplikacji kredytowych pochodzi od osób bez osób zależnych finansowo, co sugeruje, że są oni dominującą grupą w badanej próbie.
 
-Wykres mozaikowy przedstawia proporcje między *liczbą osób zależnych
-finansowo* a *statusem kredytu*. Wartości standaryzowanych reszt nie
-wskazują na istotne odchylenia od wartości oczekiwanych, co oznacza, że
-*liczba osób zależnych finansowo* prawdopodobnie nie ma istotnego wpływu
-na decyzję kredytową.
+Wykres mozaikowy przedstawia proporcje między *liczbą osób zależnych finansowo* a *statusem kredytu*.
+Wartości standaryzowanych reszt nie wskazują na istotne odchylenia od wartości oczekiwanych, co oznacza, że *liczba osób zależnych finansowo* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 
 -   **Status kredytu vs poziom edukacji**
 
@@ -898,16 +768,12 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach
-*poziomu edukacji* w podziale na *status kredytu*. Najwięcej aplikacji
-kredytowych pochodzi od osób z wykształceniem wyższym, co sugeruje, że
-są oni dominującą grupą w badanej próbie. Nie ma widocznych znaczących
-różnic między kategoriami pod względem proporcji decyzji kredytowych.
+Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach *poziomu edukacji* w podziale na *status kredytu*.
+Najwięcej aplikacji kredytowych pochodzi od osób z wykształceniem wyższym, co sugeruje, że są oni dominującą grupą w badanej próbie.
+Nie ma widocznych znaczących różnic między kategoriami pod względem proporcji decyzji kredytowych.
 
-Wykres mozaikowy przedstawia proporcje między *poziomem edukacji* a
-*statusem kredytu*. Wartości standaryzowanych reszt nie wskazują na
-istotne odchylenia od wartości oczekiwanych, co oznacza, że *poziom
-edukacji* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
+Wykres mozaikowy przedstawia proporcje między *poziomem edukacji* a *statusem kredytu*.
+Wartości standaryzowanych reszt nie wskazują na istotne odchylenia od wartości oczekiwanych, co oznacza, że *poziom edukacji* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 
 -   **Status kredytu vs samozatrudnienie**
 
@@ -929,17 +795,12 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczbę osób *samozatrudnionych* i nie w
-podziale na *status* *kredytu*. Najwięcej aplikacji kredytowych pochodzi
-od osób nie będących samozatrudnionymi, co sugeruje, że są oni
-dominującą grupą w badanej próbie. Nie ma widocznych znaczących różnic
-między kategoriami pod względem proporcji decyzji kredytowych.
+Wykres ilościowy przedstawia liczbę osób *samozatrudnionych* i nie w podziale na *status* *kredytu*.
+Najwięcej aplikacji kredytowych pochodzi od osób nie będących samozatrudnionymi, co sugeruje, że są oni dominującą grupą w badanej próbie.
+Nie ma widocznych znaczących różnic między kategoriami pod względem proporcji decyzji kredytowych.
 
-Wykres mozaikowy przedstawia proporcje między byciem *samozatrudnionym*
-a *statusem kredytu*. Wartości standaryzowanych reszt nie wskazują na
-istotne odchylenia od wartości oczekiwanych, co oznacza, że
-*samozatrudnienie* prawdopodobnie nie ma istotnego wpływu na decyzję
-kredytową.
+Wykres mozaikowy przedstawia proporcje między byciem *samozatrudnionym* a *statusem kredytu*.
+Wartości standaryzowanych reszt nie wskazują na istotne odchylenia od wartości oczekiwanych, co oznacza, że *samozatrudnienie* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową.
 
 -   **Status kredytu vs okres kredytowania**
 
@@ -961,17 +822,11 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach
-*okresu kredytowania* w podziale na *status* *kredytu*. Najwięcej
-aplikacji kredytowych dotyczy okresu 30 lat, co sugeruje, że jest to
-dominujący okres kredytowania w badanej próbie.
+Wykres ilościowy przedstawia liczbę osób w poszczególnych kategoriach *okresu kredytowania* w podziale na *status* *kredytu*.
+Najwięcej aplikacji kredytowych dotyczy okresu 30 lat, co sugeruje, że jest to dominujący okres kredytowania w badanej próbie.
 
-Wykres mozaikowy przedstawia proporcje między *okresem kredytowania* a
-*statusem kredytu*. Wartości standaryzowanych reszt nie wskazują na
-istotne odchylenia od wartości oczekiwanych, co oznacza, że *okres
-kredytowania* prawdopodobnie nie ma istotnego wpływu na decyzję
-kredytową, jednak ze względu na dużą liczbę kategorii oraz małe
-częstości poszczególnych kategorii, wykres może wprowadzać w błąd.
+Wykres mozaikowy przedstawia proporcje między *okresem kredytowania* a *statusem kredytu*.
+Wartości standaryzowanych reszt nie wskazują na istotne odchylenia od wartości oczekiwanych, co oznacza, że *okres kredytowania* prawdopodobnie nie ma istotnego wpływu na decyzję kredytową, jednak ze względu na dużą liczbę kategorii oraz małe częstości poszczególnych kategorii, wykres może wprowadzać w błąd.
 
 -   **Status kredytu vs historia kredytowa**
 
@@ -993,18 +848,11 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczebność przypadków dla osób
-posiadających *historię* *kredytową* i nie oraz pokazuje, że są znaczące
-różnice między tymi kategoriami pod względem proporcji decyzji
-kredytowych.
+Wykres ilościowy przedstawia liczebność przypadków dla osób posiadających *historię* *kredytową* i nie oraz pokazuje, że są znaczące różnice między tymi kategoriami pod względem proporcji decyzji kredytowych.
 
-Wykres mozaikowy przedstawia reszty standaryzowane (standardized
-residuals), które pokazują różnice między obserwowaną a oczekiwaną
-liczebnością w poszczególnych kategoriach. Kolor niebieski wskazuje, że
-w tych kategoriach liczba obserwacji jest większa, a kolor czerwony, że
-liczba obserwacji jest mniejsza niż oczekiwana. Wykres ten sugeruje
-więc, że *historia* *kredytowa* może mieć istotny wpływ na decyzję
-kredytową.
+Wykres mozaikowy przedstawia reszty standaryzowane (standardized residuals), które pokazują różnice między obserwowaną a oczekiwaną liczebnością w poszczególnych kategoriach.
+Kolor niebieski wskazuje, że w tych kategoriach liczba obserwacji jest większa, a kolor czerwony, że liczba obserwacji jest mniejsza niż oczekiwana.
+Wykres ten sugeruje więc, że *historia* *kredytowa* może mieć istotny wpływ na decyzję kredytową.
 
 -   **Status kredytu vs położenie obiektu hipoteki**
 
@@ -1026,16 +874,11 @@ ggplot(as.data.frame(tabela), aes(Var1, Var2, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres ilościowy przedstawia liczebność przypadków dla różnych kategorii
-*położenia* *obiektu* *hipoteki* i pokazuje, że występują różnice między
-tymi kategoriami pod względem proporcji decyzji kredytowych.
+Wykres ilościowy przedstawia liczebność przypadków dla różnych kategorii *położenia* *obiektu* *hipoteki* i pokazuje, że występują różnice między tymi kategoriami pod względem proporcji decyzji kredytowych.
 
-Wykres mozaikowy przedstawia reszty standaryzowane (standardized
-residuals), które pokazują różnice między obserwowaną a oczekiwaną
-liczebnością w poszczególnych kategoriach. Kolor czerwony wskazuje, że
-liczba obserwacji jest mniejsza niż oczekiwana. Wykres ten sugeruje
-więc, że *położenie* *obiektu* *hipoteki* kredytowa może mieć
-statystycznie istotny wpływ na decyzję kredytową.
+Wykres mozaikowy przedstawia reszty standaryzowane (standardized residuals), które pokazują różnice między obserwowaną a oczekiwaną liczebnością w poszczególnych kategoriach.
+Kolor czerwony wskazuje, że liczba obserwacji jest mniejsza niż oczekiwana.
+Wykres ten sugeruje więc, że *położenie* *obiektu* *hipoteki* kredytowa może mieć statystycznie istotny wpływ na decyzję kredytową.
 
 ### Dwuwymiarowa analiza zmiennych mieszanych (jakościowej z ilościową)
 
@@ -1061,17 +904,11 @@ wykres2 <- ggplot(dane, aes(x = Loan_Status, y = log_ApplicantIncome, fill = Loa
 wykres1 + wykres2 + plot_layout(ncol = 2)
 ```
 
-Na klasycznym wykresie pudełkowym można zauważyć, że *dochody osób*,
-którym przyznano kredyt, są podobne do dochodów osób, którym go
-odmówiono – nie ma wyraźnej różnicy w medianie i rozstępie kwartylowym.
+Na klasycznym wykresie pudełkowym można zauważyć, że *dochody osób*, którym przyznano kredyt, są podobne do dochodów osób, którym go odmówiono – nie ma wyraźnej różnicy w medianie i rozstępie kwartylowym.
 
-Boxplot z rzeczywistymi danymi jest klasycznym wykresem pudełkowym
-wzbogaconym o rzeczywiste dane w postaci kropek, dzięki czemu można
-zobaczyć rzeczywisty rozkład *dochodów*, a nie tylko statystyki opisowe.
-Widać, że rozkład dochodów jest zbliżony dla obu grup, co potwierdza
-brak wyraźnego związku między *wysokością dochodów* a *przyznaniem
-kredytu*. W obu grupach występują wartości odstające, ale ich liczba i
-zakres są podobne.
+Boxplot z rzeczywistymi danymi jest klasycznym wykresem pudełkowym wzbogaconym o rzeczywiste dane w postaci kropek, dzięki czemu można zobaczyć rzeczywisty rozkład *dochodów*, a nie tylko statystyki opisowe.
+Widać, że rozkład dochodów jest zbliżony dla obu grup, co potwierdza brak wyraźnego związku między *wysokością dochodów* a *przyznaniem kredytu*.
+W obu grupach występują wartości odstające, ale ich liczba i zakres są podobne.
 
 -   **Status kredytu vs kwota kredytu**
 
@@ -1095,13 +932,9 @@ wykres2 <- ggplot(dane, aes(x = Loan_Status, y = log_LoanAmount, fill = Loan_Sta
 wykres1 + wykres2 + plot_layout(ncol = 2)
 ```
 
-Na klasycznym wykresie pudełkowym można zauważyć, że *kwoty kredytów*,
-które zostały przyznane, są podobne do kwot kredytów, które nie zostały
-przyznane – nie ma wyraźnej różnicy w medianie i rozstępie kwartylowym.
+Na klasycznym wykresie pudełkowym można zauważyć, że *kwoty kredytów*, które zostały przyznane, są podobne do kwot kredytów, które nie zostały przyznane – nie ma wyraźnej różnicy w medianie i rozstępie kwartylowym.
 
-Boxplot z rzeczywistymi danymi pokazuje, że rozkład *kwot kredytów* jest
-zbliżony dla obu grup, co potwierdza brak wyraźnego związku między
-*kwotą kredytu* a *przyznaniem kredytu*.
+Boxplot z rzeczywistymi danymi pokazuje, że rozkład *kwot kredytów* jest zbliżony dla obu grup, co potwierdza brak wyraźnego związku między *kwotą kredytu* a *przyznaniem kredytu*.
 
 -   **Status kredytu vs dochód całkowity**
 
@@ -1125,15 +958,10 @@ wykres2 <- ggplot(dane, aes(x = Loan_Status, y = log_TotalIncome, fill = Loan_St
 wykres1 + wykres2 + plot_layout(ncol = 2)
 ```
 
-Na klasycznym wykresie pudełkowym można zauważyć, że *dochody całkowite
-osób*, którym przyznano kredyt, są podobne do dochodów całkowitych osób,
-którym zostały on odmówiony – nie ma wyraźnej różnicy w medianie i
-rozstępie kwartylowym.
+Na klasycznym wykresie pudełkowym można zauważyć, że *dochody całkowite osób*, którym przyznano kredyt, są podobne do dochodów całkowitych osób, którym zostały on odmówiony – nie ma wyraźnej różnicy w medianie i rozstępie kwartylowym.
 
-Boxplot z rzeczywistymi danymi pokazuje, że rozkład *dochodów
-całkowitych* jest zbliżony dla obu grup, co potwierdza brak wyraźnego
-związku między *wysokością dochodów* a *przyznaniem kredytu*. Logika
-jednak podpowiada, że zależność taka powinna występować.
+Boxplot z rzeczywistymi danymi pokazuje, że rozkład *dochodów całkowitych* jest zbliżony dla obu grup, co potwierdza brak wyraźnego związku między *wysokością dochodów* a *przyznaniem kredytu*.
+Logika jednak podpowiada, że zależność taka powinna występować.
 
 -   **Status kredytu vs wskaźnik zadłużenia w stosunku do dochodu**
 
@@ -1157,33 +985,24 @@ wykres2 <- ggplot(dane, aes(x = Loan_Status, y = log_DebtToIncomeRatio, fill = L
 wykres1 + wykres2 + plot_layout(ncol = 2)
 ```
 
-Na klasycznym wykresie pudełkowym można zauważyć, że *wskaźnik
-zadłużenia w stosunku do dochodów* osób, którym przyznano kredyt, są
-podobne do takiego wskaźnika osób, którym zostały on odmówiony – nie ma
-wyraźnej różnicy w medianie i rozstępie kwartylowym.
+Na klasycznym wykresie pudełkowym można zauważyć, że *wskaźnik zadłużenia w stosunku do dochodów* osób, którym przyznano kredyt, są podobne do takiego wskaźnika osób, którym zostały on odmówiony – nie ma wyraźnej różnicy w medianie i rozstępie kwartylowym.
 
-Boxplot z rzeczywistymi danymi pokazuje, że rozkład wskaźników
-zadłużenia w stosunku do dochodów jest zbliżony dla obu grup, co
-potwierdza brak wyraźnego związku między tą zmienną a *przyznaniem*
-*kredytu*. Logika jednak podpowiada, że zależność taka powinna
-występować.
+Boxplot z rzeczywistymi danymi pokazuje, że rozkład wskaźników zadłużenia w stosunku do dochodów jest zbliżony dla obu grup, co potwierdza brak wyraźnego związku między tą zmienną a *przyznaniem* *kredytu*.
+Logika jednak podpowiada, że zależność taka powinna występować.
 
 ## 3. Budowanie i testowanie hipotez
 
 Autor: Julia Sowińska
 
-Dla wszystkich postawionych hipotez, przyjmuje się poziom istotności
-alpha w wysokości 0,05 (5%).
+Dla wszystkich postawionych hipotez, przyjmuje się poziom istotności alpha w wysokości 0,05 (5%).
 
 ### Hipotezy:
 
 #### A. Status kredytu i historia kredytowa
 
-H₀: Prawdopodobieństwo *przyznania kredytu* (Loan_Status) jest
-niezależne od posiadania *historii* *kredytowej* (Credit_History).
+H₀: Prawdopodobieństwo *przyznania kredytu* (Loan_Status) jest niezależne od posiadania *historii* *kredytowej* (Credit_History).
 
-H₁: Prawdopodobieństwo *przyznania* *kredytu* różni się w zależności od
-posiadania *historii kredytowej*.
+H₁: Prawdopodobieństwo *przyznania* *kredytu* różni się w zależności od posiadania *historii kredytowej*.
 
 ```{r}
 h <- table(dane$Loan_Status, dane$Credit_History)
@@ -1191,18 +1010,14 @@ kable(as.data.frame.matrix(h), caption = "Tabela krzyżowa: Status kredytu vs Hi
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-Założenie o minimalnej liczbie 5 obserwacji w każdej komórce tabeli
-kontyngencji (założenie testu chi-kwadrat), jest spełnione, dlatego
-zostanie wykorzystany test Chi-kwadrat.
+Założenie o minimalnej liczbie 5 obserwacji w każdej komórce tabeli kontyngencji (założenie testu chi-kwadrat), jest spełnione, dlatego zostanie wykorzystany test Chi-kwadrat.
 
 ```{r}
 chi_kwadrat <- chisq.test(h)
 print(chi_kwadrat)
 ```
 
-P-value jest mniejsze niż przyjęty poziom istotności, co pozwala
-odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu
-zależności między *statusem kredytu* a *historią kredytowania*.
+P-value jest mniejsze niż przyjęty poziom istotności, co pozwala odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu zależności między *statusem kredytu* a *historią kredytowania*.
 
 ```{r}
 n <- sum(h)
@@ -1211,22 +1026,18 @@ names(phi_cramer) <- "Cramer's V"
 print(phi_cramer)
 ```
 
-Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,428, co świadczy
-o umiarkowanym związku między zmiennymi Loan_Status i Credit_History.
+Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,428, co świadczy o umiarkowanym związku między zmiennymi Loan_Status i Credit_History.
 
 ```{r}
 ggbarstats(data = dane, x = Credit_History, y = Loan_Status, xlab = "Status kredytu", legend.title = "Historia kredytowa", package = "Redmonder", palette = "qMSOBu")
 ```
 
-Wykres przedstawia zależność między posiadaniem *historii kredytowej* a
-*przyznaniem kredytu*. Posiadanie historii kredytowej znacznie zwiększa
-szanse na uzyskanie kredytu, co sugeruje, że instytucje finansowe silnie
-uwzględniają ten czynnik w ocenie ryzyka kredytowego.
+Wykres przedstawia zależność między posiadaniem *historii kredytowej* a *przyznaniem kredytu*.
+Posiadanie historii kredytowej znacznie zwiększa szanse na uzyskanie kredytu, co sugeruje, że instytucje finansowe silnie uwzględniają ten czynnik w ocenie ryzyka kredytowego.
 
 #### B. Status kredytu i okres kredytowania
 
-H₀: *Okres kredytowania* (Loan_Amount_Term) nie wpływa na decyzję o
-*przyznaniu kredytu*.
+H₀: *Okres kredytowania* (Loan_Amount_Term) nie wpływa na decyzję o *przyznaniu kredytu*.
 
 H₁: *Okres kredytowania* wpływa na decyzję o *przyznaniu kredytu*.
 
@@ -1236,33 +1047,26 @@ kable(as.data.frame.matrix(h), caption = "Tabela krzyżowa: Status kredytu vs Ok
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-Założenie o minimalnej liczbie 5 oczekiwanych obserwacji w każdej
-komórce tabeli kontyngencji (założenie testu chi-kwadrat), nie jest
-spełnione, więc wykorzystany zostanie test Fishera.
+Założenie o minimalnej liczbie 5 oczekiwanych obserwacji w każdej komórce tabeli kontyngencji (założenie testu chi-kwadrat), nie jest spełnione, więc wykorzystany zostanie test Fishera.
 
 ```{r}
 fisher_test <- fisher.test(h)
 print(fisher_test)
 ```
 
-P-value jest większe niż przyjęty poziom istotności, co oznacza brak
-podstaw do odrzucenia hipotezy zerowej o braku zależności między
-*statusem* a *czasem trwania kredytu*.
+P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między *statusem* a *czasem trwania kredytu*.
 
 ```{r}
 ggbarstats(data = dane, x = Loan_Amount_Term, y = Loan_Status, test = "fisher", xlab = "Status kredytu", legend.title = "Okres kredytowania", package = "Redmonder", palette = "qMSOBu")
 ```
 
-Wykres przedstawia brak zależności między wybranym *okresem
-kredytowania* a *przyznaniem kredytu*.
+Wykres przedstawia brak zależności między wybranym *okresem kredytowania* a *przyznaniem kredytu*.
 
 #### C. Status kredytu i położenie obiektu hipoteki
 
-H₀: *Położenie obiektu hipoteki* (Property_Area) nie wpływa na decyzję o
-*przyznaniu kredytu*.
+H₀: *Położenie obiektu hipoteki* (Property_Area) nie wpływa na decyzję o *przyznaniu kredytu*.
 
-H₁: *Położenie obiektu hipoteki* wpływa na decyzję o *przyznaniu
-kredytu*.
+H₁: *Położenie obiektu hipoteki* wpływa na decyzję o *przyznaniu kredytu*.
 
 ```{r}
 h <- table(dane$Loan_Status, dane$Property_Area)
@@ -1270,18 +1074,14 @@ kable(as.data.frame.matrix(h), caption = "Tabela krzyżowa: Status kredytu vs Po
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-Założenie o minimalnej liczbie 5 oczekiwanych obserwacji w każdej
-komórce tabeli kontyngencji (założenie testu chi-kwadrat), jest
-spełnione, dlatego zostanie wykorzystany test Chi-kwadrat.
+Założenie o minimalnej liczbie 5 oczekiwanych obserwacji w każdej komórce tabeli kontyngencji (założenie testu chi-kwadrat), jest spełnione, dlatego zostanie wykorzystany test Chi-kwadrat.
 
 ```{r}
 chi_kwadrat <- chisq.test(h)
 print(chi_kwadrat)
 ```
 
-P-value jest mniejsze niż przyjęty poziom istotności, co pozwala
-odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu
-zależności między *statusem kredytu* a *położeniem obiektu hipoteki*.
+P-value jest mniejsze niż przyjęty poziom istotności, co pozwala odrzucić hipotezę zerową i przyjąć hipotezę alternatywną o istnieniu zależności między *statusem kredytu* a *położeniem obiektu hipoteki*.
 
 ```{r}
 n <- sum(h)
@@ -1290,26 +1090,20 @@ names(phi_cramer) <- "Cramer's V"
 print(phi_cramer)
 ```
 
-Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,142, co świadczy
-o słabym związku między *statusem kredytu* a *położeniem obiektu
-hipoteki*.
+Współczynnik Cramera przyjmuje wartość w przybliżeniu 0,142, co świadczy o słabym związku między *statusem kredytu* a *położeniem obiektu hipoteki*.
 
 ```{r}
 ggbarstats(data = dane, x = Property_Area, y = Loan_Status, xlab = "Status kredytu", legend.title = "Położenie obiektu hipoteki", package = "Redmonder", palette = "qMSOBu")
 ```
 
-Wykres przedstawia zależność między *położeniem obiektu hipoteki* a
-*przyznaniem kredytu*. Położenie obiektu hipoteki w obszarze
-pół-miejskim znacznie zwiększa szanse na uzyskanie kredytu.
+Wykres przedstawia zależność między *położeniem obiektu hipoteki* a *przyznaniem kredytu*.
+Położenie obiektu hipoteki w obszarze pół-miejskim znacznie zwiększa szanse na uzyskanie kredytu.
 
 #### D. Status kredytu i wskaźnik zadłużenia w stosunku do dochodu
 
-H₀: Średni *wskaźnik zadłużenia w stosunku do dochodu*
-(DebtToIncomeRatio) nie różni się między grupami, którym przyznano i nie
-przyznano kredytu.
+H₀: Średni *wskaźnik zadłużenia w stosunku do dochodu* (DebtToIncomeRatio) nie różni się między grupami, którym przyznano i nie przyznano kredytu.
 
-H₁: Średni *wskaźnik zadłużenia w stosunku do dochodu* różni się między
-grupami, którym przyznano i nie przyznano kredytu.
+H₁: Średni *wskaźnik zadłużenia w stosunku do dochodu* różni się między grupami, którym przyznano i nie przyznano kredytu.
 
 ```{r}
 group_yes <- dane$log_DebtToIncomeRatio[dane$Loan_Status == "Yes"]
@@ -1325,28 +1119,20 @@ bartlett_test <- bartlett.test(DebtToIncomeRatio ~ Loan_Status, data = dane)
 print(bartlett_test)
 ```
 
-Zarówno założenie o normalności rozkładu zmiennej reprezentującej
-wskaźnik zadłużenia w stosunku do dochodu w każdej z grup statusu
-kredytu (Yes/No), jak i założenie o jednorodności wariancji nie zostały
-spełnione, dlatego zamiast testu t-Studenta, stosowany będzie test U
-Manna-Whitneya.
+Zarówno założenie o normalności rozkładu zmiennej reprezentującej wskaźnik zadłużenia w stosunku do dochodu w każdej z grup statusu kredytu (Yes/No), jak i założenie o jednorodności wariancji nie zostały spełnione, dlatego zamiast testu t-Studenta, stosowany będzie test U Manna-Whitneya.
 
 ```{r}
 mannwhitney <- wilcox.test(log_DebtToIncomeRatio ~ Loan_Status, data = dane)
   print(mannwhitney)
 ```
 
-P-value jest większe niż przyjęty poziom istotności, co oznacza brak
-podstaw do odrzucenia hipotezy zerowej o braku zależności między
-*statusem kredytu* a *Wskaźnikiem zadłużenia w stosunku do dochodu*.
+P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między *statusem kredytu* a *Wskaźnikiem zadłużenia w stosunku do dochodu*.
 
 #### E. Status kredytu i dochód całkowity
 
-H₀: Średni *całkowity dochód* (TotalIncome) nie różni się między
-grupami, którym przyznano i nie przyznano kredytu.
+H₀: Średni *całkowity dochód* (TotalIncome) nie różni się między grupami, którym przyznano i nie przyznano kredytu.
 
-H₁: Średni *całkowity dochód* różni się między grupami, którym przyznano
-i nie przyznano kredytu.
+H₁: Średni *całkowity dochód* różni się między grupami, którym przyznano i nie przyznano kredytu.
 
 ```{r}
 group_yes <- dane$log_TotalIncome[dane$Loan_Status == "Yes"]
@@ -1362,23 +1148,16 @@ bartlett_test <- bartlett.test(log_TotalIncome ~ Loan_Status, data = dane)
 print(bartlett_test)
 ```
 
-Zarówno założenie o normalności rozkładu całkowitego dochodu w każdej z
-grup Loan_Status (Yes/No), jak i założenie o jednorodności wariancji nie
-zostały spełnione, dlatego zamiast testu t-Studenta, stosowany będzie
-test U Manna-Whitneya.
+Zarówno założenie o normalności rozkładu całkowitego dochodu w każdej z grup Loan_Status (Yes/No), jak i założenie o jednorodności wariancji nie zostały spełnione, dlatego zamiast testu t-Studenta, stosowany będzie test U Manna-Whitneya.
 
 ```{r}
 mannwhitney <- wilcox.test(log_TotalIncome ~ Loan_Status, data = dane)
   print(mannwhitney)
 ```
 
-P-value jest większe niż przyjęty poziom istotności, co oznacza brak
-podstaw do odrzucenia hipotezy zerowej o braku zależności między
-*statusem kredytu* a *Dochodem całkowitym*.
+P-value jest większe niż przyjęty poziom istotności, co oznacza brak podstaw do odrzucenia hipotezy zerowej o braku zależności między *statusem kredytu* a *Dochodem całkowitym*.
 
-Zależność zmiennych dotyczących posiadania *Historii kredytowej* oraz
-*Położenia obiektu hipoteki* ze zmienną dotyczącą *Przyznania kredytu*
-zostały uznane za istotne.
+Zależność zmiennych dotyczących posiadania *Historii kredytowej* oraz *Położenia obiektu hipoteki* ze zmienną dotyczącą *Przyznania kredytu* zostały uznane za istotne.
 
 ## 4. Grupy klientów według kombinacji *Historii kredytowej* i *Położenie obiektu hipoteki*
 
@@ -1410,8 +1189,7 @@ kable(statystyki, caption = "Porównanie grup aplikantów") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-Tabela pokazuje, jak podobne pod względem innych zmiennych są
-poszczególne grupy.
+Tabela pokazuje, jak podobne pod względem innych zmiennych są poszczególne grupy.
 
 ### Proporcje przyznanych kredytów w każdej grupie
 
@@ -1446,11 +1224,8 @@ train <- dane[train_idx, ]
 test <- dane[-train_idx, ]
 ```
 
-Dane zostały podzielona na dwa zbiory - treningowy i testowy, by uniknąć
-przeuczenia (overfittingu) oraz zapewnić rzetelną ocenę modelu poprzez
-testowanie modelu na danych, których nie widział podczas treningu.
-Zdecydowano się na podział: 70% danych do treningu i 30% danych do
-testu.
+Dane zostały podzielona na dwa zbiory - treningowy i testowy, by uniknąć przeuczenia (overfittingu) oraz zapewnić rzetelną ocenę modelu poprzez testowanie modelu na danych, których nie widział podczas treningu.
+Zdecydowano się na podział: 70% danych do treningu i 30% danych do testu.
 
 ### Budowa modelu
 
@@ -1459,13 +1234,9 @@ model <- glm(Loan_Status_Binary ~ Credit_History + Property_Area, data = train, 
 summary(model)
 ```
 
-Zbudowany został model regresji logistycznej (logit), który był
-naturalnym wyborem dla problemu klasyfikacji binarnej, jakim było
-przyznanie bądź nieprzyznanie kredytu. Model ten został wybrany ze
-względu na jego prostotę, szybkość i efektywność, a także ze względu na
-łatwiejszą interpretację. Jest to model predykcyjny, zatem zdecydowano
-się na pozostawienie w nim wszystkich zmiennych bez względu na istotność
-statystyczną.
+Zbudowany został model regresji logistycznej (logit), który był naturalnym wyborem dla problemu klasyfikacji binarnej, jakim było przyznanie bądź nieprzyznanie kredytu.
+Model ten został wybrany ze względu na jego prostotę, szybkość i efektywność, a także ze względu na łatwiejszą interpretację.
+Jest to model predykcyjny, zatem zdecydowano się na pozostawienie w nim wszystkich zmiennych bez względu na istotność statystyczną.
 
 ### Ocena modelu
 
@@ -1482,10 +1253,7 @@ ggplot(confusion_matrix_df, aes(Actual, Predicted, fill = Freq)) +
   wykres_gr
 ```
 
-Wykres przedstawia tablicę kontyngencji i pokazuję, że prognozy
-dotyczące *przyznania kredytu* (rzeczywisty Credit_Status == "Yes) były
-dużo bardziej trafne, niż te dotyczące nie przyznania kredytu, co może
-sugerować, że model powinien obejmować jeszcze inne zmienne.
+Wykres przedstawia tablicę kontyngencji i pokazuję, że prognozy dotyczące *przyznania kredytu* (rzeczywisty Credit_Status == "Yes) były dużo bardziej trafne, niż te dotyczące nie przyznania kredytu, co może sugerować, że model powinien obejmować jeszcze inne zmienne.
 
 ```{r}
 accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
@@ -1499,11 +1267,9 @@ f1_score <- 2 * (precision * recall) / (precision + recall)
 cat("F1-score:", f1_score, "\n")
 ```
 
-Model prawidłowo klasyfikuje około 75,68% przypadków. Około 88,46%
-przewidywań przyznania kredytu jest prawidłowe i około 79,31%
-rzeczywistych przyznań kredytu zostało poprawnie wykrytych. F1-score
-wynosi około 0,84, co oznacza, że model jest dobrze wyważony między
-precyzją a czułością.
+Model prawidłowo klasyfikuje około 75,68% przypadków.
+Około 88,46% przewidywań przyznania kredytu jest prawidłowe i około 79,31% rzeczywistych przyznań kredytu zostało poprawnie wykrytych.
+F1-score wynosi około 0,84, co oznacza, że model jest dobrze wyważony między precyzją a czułością.
 
 ```{r}
 roc_curve <- roc(test$Loan_Status, predictions)
@@ -1517,15 +1283,8 @@ AUC przyjmuje wartość 0,7614, co oznacza, że model jest przyzwoity.
 
 Autor: Julia Sowińska
 
-Analiza danych kredytowych ujawniła kilka istotnych wzorców dotyczących
-decyzji kredytowych oraz czynników mogących wpływać na ich przyznawanie.
-Najważniejszym czynnikiem wpływającym na decyzję kredytową jest
-posiadanie historii kredytowej, co sugeruje, że instytucje finansowe w
-dużym stopniu opierają się na wcześniejszych zobowiązaniach klienta przy
-ocenie jego wiarygodności. Położenie obiektu hipoteki może również
-wpływać na decyzję, ale w mniejszym stopniu. Pozostałe zmienne, takie
-jak dochody, wskaźnik zadłużenia czy poziom edukacji, nie wykazują
-istotnych zależności. Wyniki analizy dostarczają istotnych informacji
-dla instytucji kredytowych, które mogą pozwolić na automatyzację procesu
-podejmowania decyzji o przyznaniu lub nieprzyznaniu kredytu
-hipotecznego.
+Analiza danych kredytowych ujawniła kilka istotnych wzorców dotyczących decyzji kredytowych oraz czynników mogących wpływać na ich przyznawanie.
+Najważniejszym czynnikiem wpływającym na decyzję kredytową jest posiadanie historii kredytowej, co sugeruje, że instytucje finansowe w dużym stopniu opierają się na wcześniejszych zobowiązaniach klienta przy ocenie jego wiarygodności.
+Położenie obiektu hipoteki może również wpływać na decyzję, ale w mniejszym stopniu.
+Pozostałe zmienne, takie jak dochody, wskaźnik zadłużenia czy poziom edukacji, nie wykazują istotnych zależności.
+Wyniki analizy dostarczają istotnych informacji dla instytucji kredytowych, które mogą pozwolić na automatyzację procesu podejmowania decyzji o przyznaniu lub nieprzyznaniu kredytu hipotecznego.
