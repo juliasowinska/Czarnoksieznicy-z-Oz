@@ -12,11 +12,5 @@ Twoja firma zajmuje się wszystkimi kredytami mieszkaniowymi. Jest obecna na wsz
 ### Problem
 Firma chce zautomatyzować proces przyznawania pożyczki (w czasie rzeczywistym) w oparciu o dane klienta podane podczas wypełniania wniosku online. Dane te obejmują płeć, stan cywilny, wykształcenie, liczbę osób na utrzymaniu, dochód, kwotę pożyczki, historię kredytową i inne. Aby zautomatyzować ten proces, firma postawiła sobie za cel zidentyfikowanie segmentów klientów kwalifikujących się do otrzymania kwoty pożyczki i skierowanie jej właśnie do nich. W tym przypadku dostarczono częściowy zestaw danych.
 
-## Kroki do wykonania:
-1.	Określenie problemu
-2.	Postawienie hipotez
-3.	Przygotowanie systemu i załadowanie danych
-4.	Zrozumienie danych
-5.	EDA
-- Przeprowadzanie analizy jednowymiarowej
-- Przeprowadzenie analizy dwuwymiarowej
+## Wnioski
+Analiza danych kredytowych ujawniła kilka istotnych wzorców dotyczących decyzji kredytowych oraz czynników mogących wpływać na ich przyznawanie. Najważniejszym czynnikiem wpływającym na decyzję kredytową jest posiadanie **historii kredytowej**, co sugeruje, że instytucje finansowe w dużym stopniu opierają się na wcześniejszych zobowiązaniach klienta przy ocenie jego wiarygodności. **Położenie obiektu hipoteki** może również wpływać na decyzję, ale w mniejszym stopniu. Pozostałe zmienne, takie jak dochody, wskaźnik zadłużenia czy poziom edukacji, nie wykazują istotnych zależności. Wyniki analizy dostarczają istotnych informacji dla instytucji kredytowych, które mogą pozwolić na automatyzację procesu podejmowania decyzji o przyznaniu lub nieprzyznaniu kredytu hipotecznego.
